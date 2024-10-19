@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTextEdit>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -17,7 +18,31 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void on_newFile_triggered();
+    void on_saveTxtFile_triggered();
+    void on_openExisting_triggered();
+
 private:
+    void Setup();
+    void SetupTabWidget();
+    void CreateNewTxtFile();
+    void SaveTxtFile();
+    QString GenerateNameForNewFile();
+
+    void CloseTab(int tabIndex);
+
+    void CloseTextEditTab(QTextEdit* textEdit, int tabIndex);
+    void SaveOrJustCloseFile(QWidget* widget, int tabIndex);
+
+    bool IsFileExists(QString filePath);
+    void SaveWithoutDialogWindow(QString filePath, QTextEdit* textEdit);
+    void SaveWithDialogWindow(QString filePath, QTextEdit* textEdit);
+
+    void SaveTextEditSettings(const QString& filePath);
+    void LoadTextSettings(const QString& filePath);
+    void OpenExistingFile();
+    int currentTabIndex;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

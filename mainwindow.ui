@@ -11,9 +11,15 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>SimpleWord</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabWidget"/>
+    </item>
+   </layout>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -23,9 +29,50 @@
      <height>25</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Меню</string>
+    </property>
+    <addaction name="newFile"/>
+    <addaction name="openExisting"/>
+    <addaction name="saveTxtFile"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="newFile">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/create_icon.png</normaloff>:/icons/icons/create_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Новый текстовый файл</string>
+   </property>
+   <property name="toolTip">
+    <string>Создать новый файл</string>
+   </property>
+  </action>
+  <action name="openExisting">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/open_icon.png</normaloff>:/icons/icons/open_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Открыть существующий</string>
+   </property>
+  </action>
+  <action name="saveTxtFile">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/save_icon.png</normaloff>:/icons/icons/save_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Сохранить текстовый файл</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
