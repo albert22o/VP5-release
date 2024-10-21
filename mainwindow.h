@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTextEdit>
+#include <QTemporaryFile>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,6 +23,8 @@ private slots:
     void on_newFile_triggered();
     void on_saveTxtFile_triggered();
     void on_openExisting_triggered();
+
+    void on_clean_triggered();
 
 private:
     void Setup();
@@ -43,6 +46,7 @@ private:
     void LoadTextSettings(const QString& filePath);
     void OpenExistingFile();
     int currentTabIndex;
+    static QTemporaryFile tempFile;
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

@@ -10,6 +10,10 @@
 
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QTextStream>
+
+
+QTemporaryFile MainWindow::tempFile;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -284,4 +288,24 @@ void MainWindow::LoadTextSettings(const QString& filePath) {
 void MainWindow::on_openExisting_triggered()
 {
     OpenExistingFile();
+}
+
+
+void MainWindow::on_clean_triggered()
+{
+    int pageIndex = ui->tabWidget->currentIndex();
+    QWidget *widget = ui->tabWidget->widget(pageIndex);
+    auto editor = qobject_cast<QTextEdit*>(widget);
+    if (!this->tempFile.isOpen()){
+            if (!this->tempFile.open()) {
+               return; // Открываем временный файл
+       }
+    }
+    if(editor){
+        this->tempFile.write(editor->document()->toPlainText().toUtf8());
+        this->tempFile.flush();
+        this->tempFile.close();
+        editor->document()->clear();
+    }
+    editor->document()->setModified(true);
 }
