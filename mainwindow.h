@@ -9,6 +9,8 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QRegularExpression>
+#include <QColorDialog>
+#include <QFontDialog>
 #include <QTableWidget>
 
 QT_BEGIN_NAMESPACE
@@ -37,6 +39,10 @@ private slots:
     void on_undo_triggered();
 
     void on_redo_triggered();
+
+    void on_color_triggered();
+
+    void on_font_triggered();
 
     void on_newTable_triggered();
     void on_NewTableCreted(QTableWidget* table);
@@ -77,6 +83,7 @@ private:
     void LoadTextSettings(const QString& filePath);
     void OpenExistingFile();
     int currentTabIndex;
+    QFont currentFont;
     static QTemporaryFile tempFile;
     Ui::MainWindow *ui;
     QTextEdit *editor;
