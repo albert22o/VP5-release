@@ -41,14 +41,17 @@ private slots:
     void on_newTable_triggered();
     void on_NewTableCreted(QTableWidget* table);
 
-    void button1Clicked(); // переименовать
-    void button2Clicked(); // переименовать
-    void button3Clicked(); // переименовать
-    void button4Clicked(); // переименовать
-
     void onCurrentTabChanged(int index);
 
     void SetTableActionsPannelVisible(bool flag);
+
+    void on_newRow_clicked();
+
+    void on_deleteRow_clicked();
+
+    void on_newColum_clicked();
+
+    void on_deleteColumn_clicked();
 
 private:
     void Setup();

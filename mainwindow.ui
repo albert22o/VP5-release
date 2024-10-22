@@ -15,9 +15,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QTabWidget" name="tabWidget"/>
-    </item>
     <item row="1" column="0">
      <layout class="QHBoxLayout" name="tableActionsPannel">
       <item>
@@ -28,7 +25,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="deleteColumn">
+       <widget class="QPushButton" name="deleteRow">
         <property name="text">
          <string>Удалить строку</string>
         </property>
@@ -42,13 +39,16 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="deleteRow">
+       <widget class="QPushButton" name="deleteColumn">
         <property name="text">
          <string>Удалить столбец</string>
         </property>
        </widget>
       </item>
      </layout>
+    </item>
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="tabWidget"/>
     </item>
    </layout>
   </widget>

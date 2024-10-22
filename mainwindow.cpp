@@ -544,20 +544,59 @@ void MainWindow::onCurrentTabChanged(int index){
     }
 }
 
-void MainWindow::button1Clicked() {
-    QMessageBox::information(this, "Информация", "Кнопка 1 нажата");
+
+void MainWindow::on_newRow_clicked()
+{
+    QWidget *currentWidget = ui->tabWidget->currentWidget();
+
+    if (QTableWidget *tableWidget = qobject_cast<QTableWidget*>(currentWidget)) {
+        tableWidget->insertRow(tableWidget->rowCount());
+    }
 }
 
-void MainWindow::button2Clicked() {
-    QMessageBox::information(this, "Информация", "Кнопка 2 нажата");
+
+void MainWindow::on_deleteRow_clicked()
+{
+    QWidget *currentWidget = ui->tabWidget->currentWidget();
+
+    if (QTableWidget *tableWidget = qobject_cast<QTableWidget*>(currentWidget)) {
+
+        if(tableWidget->rowCount()>1)
+        {
+            int currentRow = tableWidget->currentRow();
+            if (currentRow != -1) {
+                tableWidget->removeRow(currentRow);
+            }
+        }
+    }
 }
 
-void MainWindow::button3Clicked() {
-    QMessageBox::information(this, "Информация", "Кнопка 3 нажата");
+
+void MainWindow::on_newColum_clicked()
+{
+    QWidget *currentWidget = ui->tabWidget->currentWidget();
+
+    if (QTableWidget *tableWidget = qobject_cast<QTableWidget*>(currentWidget)) {
+
+        tableWidget->insertColumn(tableWidget->columnCount());
+    }
 }
 
-void MainWindow::button4Clicked() {
-    QMessageBox::information(this, "Информация", "Кнопка 4 нажата");
-}
 
+void MainWindow::on_deleteColumn_clicked()
+{
+    QWidget *currentWidget = ui->tabWidget->currentWidget();
+
+    if (QTableWidget *tableWidget = qobject_cast<QTableWidget*>(currentWidget)) {
+
+        if(tableWidget->columnCount()>1)
+        {
+            int currentColumn = tableWidget->currentColumn();
+
+            if (currentColumn != -1) {
+                tableWidget->removeColumn(currentColumn);
+            }
+        }
+    }
+}
 
