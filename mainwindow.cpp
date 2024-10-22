@@ -511,3 +511,36 @@ void MainWindow::on_color_triggered()
          editor->mergeCurrentCharFormat(format);  // Применяем формат ко всему текущему положению курсора
      }
 }
+
+void MainWindow::on_font_triggered()
+{
+    // Проверяем текущий редактор
+        editor = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
+        if (!editor) return;  // Если нет активного редактора, выходим
+
+        bool ok;
+        // Открываем диалог выбора шрифта
+        QFont selectedFont = QFontDialog::getFont(&ok, editor->currentFont(), this, tr("Выберите шрифт"));
+
+        if (!ok) return;  // Если пользователь отменил выбор, ничего не делаем
+
+        // Сохраняем выбранный шрифт для дальнейшего использования
+        currentFont = selectedFont;
+
+        // Получаем текстовый курсор
+        QTextCursor cursor = editor->textCursor();
+        QTextCharFormat format;
+        format.setFont(selectedFont);  // Устанавливаем выбранный шрифт в формат
+
+        // Применение шрифта
+        if (cursor.hasSelection()) {
+            // Если есть выделенный текст, применяем шрифт только к выделению
+            cursor.mergeCharFormat(format);
+        } else {
+            // Если нет выделения, устанавливаем шрифт для будущего ввода
+            editor->setCurrentCharFormat(format);
+        }
+
+        // Отмечаем документ как изменённый
+        editor->document()->setModified(true);
+}

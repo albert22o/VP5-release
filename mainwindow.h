@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QRegularExpression>
 #include <QColorDialog>
+#include <QFontDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -40,6 +41,8 @@ private slots:
 
     void on_color_triggered();
 
+    void on_font_triggered();
+
 private:
     void Setup();
     void SetupTabWidget();
@@ -60,6 +63,7 @@ private:
     void LoadTextSettings(const QString& filePath);
     void OpenExistingFile();
     int currentTabIndex;
+    QFont currentFont;
     static QTemporaryFile tempFile;
     Ui::MainWindow *ui;
     QTextEdit *editor;

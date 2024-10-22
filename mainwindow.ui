@@ -61,6 +61,7 @@
    <addaction name="undo"/>
    <addaction name="redo"/>
    <addaction name="color"/>
+   <addaction name="font"/>
   </widget>
   <action name="newFile">
    <property name="icon">
@@ -127,6 +128,11 @@
   <action name="color">
    <property name="text">
     <string>Цвет</string>
+   </property>
+  </action>
+  <action name="font">
+   <property name="text">
+    <string>Шрифт</string>
    </property>
   </action>
  </widget>
