@@ -4,6 +4,11 @@
 #include <QMainWindow>
 #include <QTextEdit>
 #include <QTemporaryFile>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QRegularExpression>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,6 +30,8 @@ private slots:
     void on_openExisting_triggered();
 
     void on_clean_triggered();
+
+    void on_search_triggered();
 
 private:
     void Setup();
@@ -48,5 +55,6 @@ private:
     int currentTabIndex;
     static QTemporaryFile tempFile;
     Ui::MainWindow *ui;
+    QTextEdit *editor;
 };
 #endif // MAINWINDOW_H

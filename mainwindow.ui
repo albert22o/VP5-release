@@ -42,6 +42,7 @@
      <string>Редактировать</string>
     </property>
     <addaction name="clean"/>
+    <addaction name="search"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -80,6 +81,11 @@
   <action name="clean">
    <property name="text">
     <string>Очистить</string>
+   </property>
+  </action>
+  <action name="search">
+   <property name="text">
+    <string>Поиск и замена</string>
    </property>
   </action>
  </widget>
