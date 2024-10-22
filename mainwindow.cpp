@@ -11,7 +11,9 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QTextStream>
+#include <QSet>
 
+#include "dialogWindows/createtexttabledialog.h"
 
 QTemporaryFile MainWindow::tempFile;
 
@@ -30,12 +32,16 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::Setup(){
+
+    SetTableActionsPannelVisible(false);
     SetupTabWidget();
 }
 
 void MainWindow::SetupTabWidget(){
     ui->tabWidget->setTabsClosable(true);
+
     connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::CloseTab);
+    connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onCurrentTabChanged);
 }
 
 void MainWindow::CloseTab(int tabIndex){
@@ -45,12 +51,19 @@ void MainWindow::CloseTab(int tabIndex){
     if(widget != nullptr){
 
         auto textEdit = qobject_cast<QTextEdit*>(widget);
+        auto tableWidget = qobject_cast<QTableWidget*>(widget);
 
-        if(textEdit != nullptr && !textEdit->document()->isModified()){
-            CloseTextEditTab(textEdit, tabIndex);
+        if(textEdit != nullptr){
+            if(!textEdit->document()->isModified()){
+                 CloseTextEditTab(textEdit, tabIndex);
+            }
+            else{
+                SaveOrJustCloseFile(widget, tabIndex);
+            }
         }
-        else{
-            SaveOrJustCloseFile(widget, tabIndex);
+
+        if(tableWidget != nullptr){
+            CloseTableWidgetTab(tableWidget, tabIndex);
         }
     }
 }
@@ -78,7 +91,10 @@ void MainWindow::CloseTextEditTab(QTextEdit* textEdit, int tabIndex){
     delete textEdit;
 }
 
-bool IsWidgetTextEdit(QWidget* widget);
+void MainWindow::CloseTableWidgetTab(QTableWidget* tableWidget, int tabIndex){
+    ui->tabWidget->removeTab(tabIndex);
+    delete tableWidget;
+}
 
 void MainWindow::CreateNewTxtFile()
 {
@@ -132,9 +148,9 @@ void MainWindow::SaveTxtFile(){
         else{
             SaveWithDialogWindow(filePath, textEdit);
         }
-    }
 
-    textEdit->document()->setModified(false);
+        textEdit->document()->setModified(false);
+    }
 }
 
 bool MainWindow::IsFileExists(QString filePath){
@@ -221,7 +237,21 @@ void MainWindow::SaveTextEditSettings(const QString& filePath){
 }
 
 void MainWindow::on_saveTxtFile_triggered()
-{
+{    
+    auto currentWidget = ui->tabWidget->currentWidget();
+
+    if (!currentWidget) {
+        QMessageBox::warning(this, tr("Ошибка сохранения файла"), tr("Нет открытой вкладки для сохранения"));
+        return;
+    }
+
+    auto isTableWidget = qobject_cast<QTableWidget*>(currentWidget);
+
+    if(isTableWidget){
+        QMessageBox::warning(this, tr("Ошибка сохранения файла"), tr("Таблица не поддерживает сохранения"));
+        return;
+    }
+
     SaveTxtFile();
 }
 
@@ -472,3 +502,62 @@ void MainWindow::on_redo_triggered()
         editor->document()->redo();
     }
 }
+
+void MainWindow::on_newTable_triggered()
+{
+    auto createTableDialog = new CreateTextTableDialog(this);
+    connect(createTableDialog,&CreateTextTableDialog::NewTableCreated, this, &MainWindow::on_NewTableCreted);
+    createTableDialog->show();
+}
+
+void MainWindow::on_NewTableCreted(QTableWidget* table){
+
+    ui->tabWidget->addTab(table, GenerateNameForNewFile());
+    ui->tabWidget->setCurrentIndex(currentTabIndex);
+    ui->tabWidget->setCurrentWidget(table);
+}
+
+void MainWindow::SetTableActionsPannelVisible(bool flag)
+{
+    for (int i = 0; i < ui->tableActionsPannel->count(); ++i) {
+
+        QLayoutItem *item = ui->tableActionsPannel->itemAt(i);
+        if (item) {
+
+            QWidget *widget = item->widget();
+            if (widget) {
+                widget->setVisible(flag);
+            }
+        }
+    }
+}
+
+void MainWindow::onCurrentTabChanged(int index){
+
+    QWidget *widget = ui->tabWidget->widget(index);
+    QTableWidget* isTableWidget = qobject_cast<QTableWidget*>(widget);
+
+    if(isTableWidget){
+        SetTableActionsPannelVisible(true);
+    }else{
+          SetTableActionsPannelVisible(false);
+    }
+}
+
+void MainWindow::button1Clicked() {
+    QMessageBox::information(this, "Информация", "Кнопка 1 нажата");
+}
+
+void MainWindow::button2Clicked() {
+    QMessageBox::information(this, "Информация", "Кнопка 2 нажата");
+}
+
+void MainWindow::button3Clicked() {
+    QMessageBox::information(this, "Информация", "Кнопка 3 нажата");
+}
+
+void MainWindow::button4Clicked() {
+    QMessageBox::information(this, "Информация", "Кнопка 4 нажата");
+}
+
+

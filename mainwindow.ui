@@ -18,6 +18,38 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget"/>
     </item>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="tableActionsPannel">
+      <item>
+       <widget class="QPushButton" name="newRow">
+        <property name="text">
+         <string>Новая строка</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteColumn">
+        <property name="text">
+         <string>Удалить строку</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="newColum">
+        <property name="text">
+         <string>Новый столбец</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteRow">
+        <property name="text">
+         <string>Удалить столбец</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -26,7 +58,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -44,8 +76,15 @@
     <addaction name="clean"/>
     <addaction name="search"/>
    </widget>
+   <widget class="QMenu" name="menu_3">
+    <property name="title">
+     <string>Таблицы</string>
+    </property>
+    <addaction name="newTable"/>
+   </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
+   <addaction name="menu_3"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -121,6 +160,15 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Z</string>
+   </property>
+  </action>
+  <action name="newTable">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/icons/icons/create_table_icon.png</normaloff>:/icons/icons/create_table_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Новая таблица</string>
    </property>
   </action>
  </widget>
