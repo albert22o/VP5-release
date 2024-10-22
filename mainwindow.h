@@ -33,6 +33,10 @@ private slots:
 
     void on_search_triggered();
 
+    void on_undo_triggered();
+
+    void on_redo_triggered();
+
 private:
     void Setup();
     void SetupTabWidget();

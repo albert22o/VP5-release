@@ -15,9 +15,10 @@
 
 QTemporaryFile MainWindow::tempFile;
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow),
+    editor(new QTextEdit)
 {
     ui->setupUi(this);
     Setup();
@@ -447,3 +448,27 @@ void MainWindow::on_search_triggered()
     searchDialog.exec();
 }
 
+
+void MainWindow::on_undo_triggered()
+{
+    if(editor){
+        if (this->tempFile.exists()) {
+            if(this->tempFile.open()){
+          // editor->undo();
+            QString saved = QString::fromUtf8(this->tempFile.readAll());
+            editor->document()->setPlainText(saved);
+            this->tempFile.close();
+            }
+        }
+        else{
+            editor->document()->undo();
+        }
+    }
+}
+
+void MainWindow::on_redo_triggered()
+{
+    if(editor){
+        editor->document()->redo();
+    }
+}
