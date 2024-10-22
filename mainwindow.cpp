@@ -472,3 +472,42 @@ void MainWindow::on_redo_triggered()
         editor->document()->redo();
     }
 }
+
+void MainWindow::on_color_triggered()
+{
+    // Получаем текущий редактор
+     editor = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
+     if (!editor) return;  // Если нет активного редактора, выходим
+
+     QTextCursor cursor = editor->textCursor();
+     QTextCharFormat currentFormat = cursor.charFormat();
+
+     // Получаем текущие цвета текста и фона
+     QColor currentTextColor = currentFormat.foreground().color();
+     QColor currentBackgroundColor = currentFormat.background().color();
+
+     // Открываем диалоги выбора цветов
+     QColor newTextColor = QColorDialog::getColor(currentTextColor, this, tr("Выберите цвет текста"));
+     QColor newBackgroundColor = QColorDialog::getColor(currentBackgroundColor, this, tr("Выберите цвет фона"));
+
+     // Применение стандартных значений при отмене выбора
+     newTextColor = newTextColor.isValid() ? newTextColor : (currentTextColor.isValid() ? currentTextColor : QColor(Qt::black));
+     newBackgroundColor = newBackgroundColor.isValid() ? newBackgroundColor : (currentBackgroundColor.isValid() ? currentBackgroundColor : QColor(Qt::white));
+
+     // Проверка на совпадение цветов текста и фона
+     if (newTextColor == newBackgroundColor) {
+         newTextColor = (newBackgroundColor.lightness() > 128) ? QColor(Qt::black) : QColor(Qt::white);
+     }
+
+     // Устанавливаем новые цвета для текста и фона
+     QTextCharFormat format;
+     format.setForeground(newTextColor);
+     format.setBackground(newBackgroundColor);
+
+     // Применение формата к выделенному тексту или всему тексту
+     if (cursor.hasSelection()) {
+         cursor.mergeCharFormat(format);
+     } else {
+         editor->mergeCurrentCharFormat(format);  // Применяем формат ко всему текущему положению курсора
+     }
+}

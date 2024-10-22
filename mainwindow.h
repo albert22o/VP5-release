@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QRegularExpression>
+#include <QColorDialog>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -36,6 +37,8 @@ private slots:
     void on_undo_triggered();
 
     void on_redo_triggered();
+
+    void on_color_triggered();
 
 private:
     void Setup();
