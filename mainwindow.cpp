@@ -683,7 +683,6 @@ void MainWindow::on_Copy_triggered()
     }
 }
 
-
 void MainWindow::on_Paste_triggered()
 {
     auto textEditWidget = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
