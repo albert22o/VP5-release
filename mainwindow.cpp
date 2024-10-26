@@ -696,6 +696,19 @@ void MainWindow::on_Paste_triggered()
 
 void MainWindow::on_Cut_triggered()
 {
+    auto textEditWidget = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
 
+    const QString iformationHeader = "Вырезать текст невозможно";
+
+    if(textEditWidget == nullptr){
+        QMessageBox::information(this, iformationHeader, "Документ не выбран");
+        return;
+    }
+
+    if(textEditWidget->textCursor().hasSelection()){
+        textEditWidget->cut();
+    }else{
+        QMessageBox::information(this, iformationHeader, "Текст для копирования не выбран");
+    }
 }
 
