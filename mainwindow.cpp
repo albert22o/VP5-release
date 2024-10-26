@@ -672,3 +672,21 @@ void MainWindow::on_deleteColumn_clicked()
     }
 }
 
+
+void MainWindow::on_Copy_triggered()
+{
+
+}
+
+
+void MainWindow::on_Paste_triggered()
+{
+
+}
+
+
+void MainWindow::on_Cut_triggered()
+{
+
+}
+

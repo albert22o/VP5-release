@@ -59,6 +59,12 @@ private slots:
 
     void on_deleteColumn_clicked();
 
+    void on_Copy_triggered();
+
+    void on_Paste_triggered();
+
+    void on_Cut_triggered();
+
 private:
     void Setup();
     void SetupTabWidget();
