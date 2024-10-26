@@ -481,25 +481,25 @@ void MainWindow::on_search_triggered()
 
 void MainWindow::on_undo_triggered()
 {
-    if(editor){
-        if (this->tempFile.exists()) {
-            if(this->tempFile.open()){
-          // editor->undo();
+    editor = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
+    if (editor) {
+        // Проверяем, существует ли временный файл, и возвращаем сохраненное состояние
+        if (this->tempFile.exists() && this->tempFile.open()) {
             QString saved = QString::fromUtf8(this->tempFile.readAll());
             editor->document()->setPlainText(saved);
             this->tempFile.close();
-            }
-        }
-        else{
-            editor->document()->undo();
+            editor->document()->setModified(true);
+        } else {
+            editor->undo(); // Используем стандартную функцию QTextEdit для отмены
         }
     }
 }
 
 void MainWindow::on_redo_triggered()
 {
-    if(editor){
-        editor->document()->redo();
+    editor = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
+    if (editor) {
+        editor->redo(); // Используем стандартную функцию QTextEdit для повтора
     }
 }
 
