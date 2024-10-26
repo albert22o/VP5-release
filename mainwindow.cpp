@@ -672,18 +672,28 @@ void MainWindow::on_deleteColumn_clicked()
     }
 }
 
-
 void MainWindow::on_Copy_triggered()
 {
+    auto textEditWidget = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
 
+    if (textEditWidget != nullptr && textEditWidget->textCursor().hasSelection()) {
+        textEditWidget->copy();
+    }else{
+        QMessageBox::information(this, "Копирование невозможно", "Текст для копирования не выбран");
+    }
 }
 
 
 void MainWindow::on_Paste_triggered()
 {
+    auto textEditWidget = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
 
+    if(textEditWidget != nullptr){
+        textEditWidget->paste();
+    }else{
+        QMessageBox::information(this, "Вставка невозможна", "Документ для вставки не выбран");
+    }
 }
-
 
 void MainWindow::on_Cut_triggered()
 {
