@@ -14,6 +14,7 @@
 #include <QSet>
 
 #include "dialogWindows/createtexttabledialog.h"
+#include "tables/tablemanager.h"
 
 QTemporaryFile MainWindow::tempFile;
 
@@ -208,7 +209,7 @@ void MainWindow::SaveTextEditSettings(const QString& filePath){
     if(textEdit != nullptr){
 
         QFileInfo fileInfo(filePath);
-        QString relativePath = "../SimpleWord/settings";
+        QString relativePath = "../SimpleWord/settings/textSettings";
         QDir settingsDir(relativePath);
 
         if (!settingsDir.exists() && !settingsDir.mkpath(".")) {
@@ -245,20 +246,60 @@ void MainWindow::on_saveTxtFile_triggered()
         return;
     }
 
-    auto isTableWidget = qobject_cast<QTableWidget*>(currentWidget);
+    auto tableWidget = qobject_cast<QTableWidget*>(currentWidget);
 
-    if(isTableWidget){
-        QMessageBox::warning(this, tr("Ошибка сохранения файла"), tr("Таблица не поддерживает сохранения"));
-        return;
+    if(tableWidget){
+
+        TableManager tableManager;
+
+        if(tableWidget->property("modified").toBool()){
+
+            auto filePath = ui->tabWidget->tabToolTip(ui->tabWidget->currentIndex());
+
+            if(filePath.isEmpty()){
+
+                filePath = QFileDialog::getSaveFileName(this, tr("Сохранить файл таблицы"), "", tr("CSV Files (*.csv);;All Files (*)"));
+
+                if (filePath.isEmpty())
+                {
+                    return;
+                }
+            }
+
+            if(tableManager.SaveTable(tableWidget, filePath) != SaveTableResults::Ok){
+
+                QMessageBox::warning(nullptr, QObject::tr("Ошибка"), QObject::tr("Не удалось сохранить файл"));
+
+                return;
+            }
+        }
     }
-
-    SaveTxtFile();
+    else{
+        SaveTxtFile();
+    }
 }
 
 void MainWindow::OpenExistingFile(){
 
     auto fileName = QFileDialog::getOpenFileName
         (this, tr("Открыть файл"), "", tr("Text Files (*.txt);;Table Files(*.csv);;All Files (*)"));
+
+    int existingIndex = -1;
+
+    for (int i = 0; i < ui->tabWidget->count(); ++i)
+    {
+        if (ui->tabWidget->tabToolTip(i) == fileName) // Сравниваем с путем к файлу
+        {
+            existingIndex = i;
+            break;
+        }
+    }
+
+    if (existingIndex != -1)
+    {
+        ui->tabWidget->setCurrentIndex(existingIndex);
+        return;
+    }
 
     if (!fileName.isEmpty()) {
 
@@ -270,19 +311,54 @@ void MainWindow::OpenExistingFile(){
             return;
         }
 
-        QTextStream in(&file);
-        QString fileContent = in.readAll();
-        file.close();
+        if(fileName.endsWith(".csv", Qt::CaseInsensitive)){
 
-        auto textEdit = new QTextEdit();
-        textEdit->setText(fileContent);
+            TableManager tableManager;
 
-        int pageIndex = ui->tabWidget->addTab(textEdit, QFileInfo(fileName).fileName());
-        ui->tabWidget->setCurrentIndex(pageIndex);
-        currentTabIndex = ui->tabWidget->currentIndex();
+            auto table = tableManager.OpenExistingTable(fileName);
 
-        LoadTextSettings(fileName);
-        textEdit->document()->setModified(false);
+            if(table != nullptr){
+                currentTabIndex = ui->tabWidget->addTab(table, QFileInfo(fileName).fileName());
+                ui->tabWidget->setCurrentIndex(currentTabIndex);
+
+                connect(table, &QTableWidget::cellChanged, this, &MainWindow::onTableCellChanged);
+                table->setProperty("modified", false);
+            }
+            else{
+
+                QMessageBox::warning(nullptr, QObject::tr("Ошибка открытия файла"), QObject::tr("Не удалось открыть файл с таблицей"));
+                return;
+            }
+        }
+        else{
+
+            QTextStream in(&file);
+            QString fileContent = in.readAll();
+            file.close();
+
+            auto textEdit = new QTextEdit();
+            textEdit->setText(fileContent);
+
+            int pageIndex = ui->tabWidget->addTab(textEdit, QFileInfo(fileName).fileName());
+            ui->tabWidget->setCurrentIndex(pageIndex);
+            currentTabIndex = ui->tabWidget->currentIndex();
+
+            LoadTextSettings(fileName);
+            textEdit->document()->setModified(false);
+        }
+    }
+}
+
+void MainWindow::onTableCellChanged(int row, int column){
+
+    Q_UNUSED(row);
+    Q_UNUSED(column);
+
+    auto currentTable = qobject_cast<QTableWidget *>(ui->tabWidget->currentWidget());
+
+    if (currentTable)
+    {
+        currentTable->setProperty("modified", true);
     }
 }
 
@@ -293,7 +369,7 @@ void MainWindow::LoadTextSettings(const QString& filePath) {
     if(textEdit != nullptr){
 
         QFileInfo fileInfo(filePath);
-        QString relativePath = "../SimpleWord/settings";
+        QString relativePath = "../SimpleWord/settings/textSettings";
         QDir settingsDir(relativePath);
         QString settingsFilePath = settingsDir.absoluteFilePath(fileInfo.fileName() + ".html");
 
@@ -320,7 +396,6 @@ void MainWindow::on_openExisting_triggered()
 {
     OpenExistingFile();
 }
-
 
 void MainWindow::on_clean_triggered()
 {
@@ -505,74 +580,130 @@ void MainWindow::on_redo_triggered()
 
 void MainWindow::on_color_triggered()
 {
-    // Получаем текущий редактор
-     editor = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
-     if (!editor) return;  // Если нет активного редактора, выходим
+    auto textEdit = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
+    auto tableWidget = qobject_cast<QTableWidget*>(ui->tabWidget->currentWidget());
 
-     QTextCursor cursor = editor->textCursor();
-     QTextCharFormat currentFormat = cursor.charFormat();
+    if(textEdit != nullptr){
 
-     // Получаем текущие цвета текста и фона
-     QColor currentTextColor = currentFormat.foreground().color();
-     QColor currentBackgroundColor = currentFormat.background().color();
+        auto cursor = textEdit->textCursor();
+        auto currentFormat = cursor.charFormat();
 
-     // Открываем диалоги выбора цветов
-     QColor newTextColor = QColorDialog::getColor(currentTextColor, this, tr("Выберите цвет текста"));
-     QColor newBackgroundColor = QColorDialog::getColor(currentBackgroundColor, this, tr("Выберите цвет фона"));
+        auto currentTextColor = currentFormat.foreground().color();
+        auto currentBackgroundColor = currentFormat.background().color();
 
-     // Применение стандартных значений при отмене выбора
-     newTextColor = newTextColor.isValid() ? newTextColor : (currentTextColor.isValid() ? currentTextColor : QColor(Qt::black));
-     newBackgroundColor = newBackgroundColor.isValid() ? newBackgroundColor : (currentBackgroundColor.isValid() ? currentBackgroundColor : QColor(Qt::white));
+        auto newTextColor = QColorDialog::getColor(currentTextColor, this, tr("Выберите цвет текста"));
+        auto newBackgroundColor = QColorDialog::getColor(currentBackgroundColor, this, tr("Выберите цвет фона"));
 
-     // Проверка на совпадение цветов текста и фона
-     if (newTextColor == newBackgroundColor) {
-         newTextColor = (newBackgroundColor.lightness() > 128) ? QColor(Qt::black) : QColor(Qt::white);
-     }
+        newTextColor = newTextColor.isValid()
+            ? newTextColor : (currentTextColor.isValid()
+            ? currentTextColor : QColor(Qt::black));
 
-     // Устанавливаем новые цвета для текста и фона
-     QTextCharFormat format;
-     format.setForeground(newTextColor);
-     format.setBackground(newBackgroundColor);
+        newBackgroundColor = newBackgroundColor.isValid()
+            ? newBackgroundColor : (currentBackgroundColor.isValid()
+            ? currentBackgroundColor : QColor(Qt::white));
 
-     // Применение формата к выделенному тексту или всему тексту
-     if (cursor.hasSelection()) {
-         cursor.mergeCharFormat(format);
-     } else {
-         editor->mergeCurrentCharFormat(format);  // Применяем формат ко всему текущему положению курсора
-     }
+        if (newTextColor == newBackgroundColor) {
+            newTextColor = (newBackgroundColor.lightness() > 128) ? QColor(Qt::black) : QColor(Qt::white);
+        }
+
+        QTextCharFormat format;
+
+        format.setForeground(newTextColor);
+        format.setBackground(newBackgroundColor);
+
+        if (cursor.hasSelection()) {
+            cursor.mergeCharFormat(format);
+        }
+        else {
+            textEdit->mergeCurrentCharFormat(format);
+        }
+    }
+
+    if(tableWidget != nullptr){
+
+        auto selectedItems = tableWidget->selectedItems();
+
+        if(!selectedItems.isEmpty()){
+
+            auto newTextColor = QColorDialog::getColor(selectedItems[0]->foreground().color(), this, tr("Выберите цвет текста"));
+            auto newBackgroundColor = QColorDialog::getColor(selectedItems[0]->background().color(), this, tr("Выберите цвет фона"));
+
+            if (!newTextColor.isValid())
+            {
+                newTextColor = selectedItems[0]->foreground().color().isValid()
+                    ? selectedItems[0]->foreground().color() : QColor(Qt::black);
+            }
+
+            if (!newBackgroundColor.isValid() || newBackgroundColor.alpha() == 0)
+            {
+                newBackgroundColor = QColor(Qt::white);
+            }
+
+            if (newTextColor == newBackgroundColor)
+            {
+                newTextColor = (newBackgroundColor.lightness() > 128) ? QColor(Qt::black) : QColor(Qt::white);
+            }
+
+            foreach (QTableWidgetItem *item, selectedItems)
+            {
+                item->setForeground(newTextColor);
+                item->setBackground(newBackgroundColor);
+            }
+        }
+        else{
+            QMessageBox::information(this, "Выбор цвета шрифта", "Выделите ячейки к которым хотите применить изменение цвета шрифта");
+        }
+    }
 }
 
 void MainWindow::on_font_triggered()
 {
-    // Проверяем текущий редактор
-        editor = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
-        if (!editor) return;  // Если нет активного редактора, выходим
+    auto textEdit = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
+    auto tableWidget = qobject_cast<QTableWidget*>(ui->tabWidget->currentWidget());
+
+    if(textEdit != nullptr){
 
         bool ok;
-        // Открываем диалог выбора шрифта
-        QFont selectedFont = QFontDialog::getFont(&ok, editor->currentFont(), this, tr("Выберите шрифт"));
+        QFont selectedFont = QFontDialog::getFont(&ok, this);
 
-        if (!ok) return;  // Если пользователь отменил выбор, ничего не делаем
+        if(ok){
 
-        // Сохраняем выбранный шрифт для дальнейшего использования
-        currentFont = selectedFont;
+            QTextCursor cursor = textEdit->textCursor();
+            QTextCharFormat format;
 
-        // Получаем текстовый курсор
-        QTextCursor cursor = editor->textCursor();
-        QTextCharFormat format;
-        format.setFont(selectedFont);  // Устанавливаем выбранный шрифт в формат
+            format.setFont(selectedFont);
 
-        // Применение шрифта
-        if (cursor.hasSelection()) {
-            // Если есть выделенный текст, применяем шрифт только к выделению
-            cursor.mergeCharFormat(format);
-        } else {
-            // Если нет выделения, устанавливаем шрифт для будущего ввода
-            editor->setCurrentCharFormat(format);
+            if (cursor.hasSelection()) {
+                cursor.mergeCharFormat(format);
+            }
+            else {
+                textEdit->setCurrentCharFormat(format);
+            }
+
+            textEdit->document()->setModified(true);
         }
+    }
 
-        // Отмечаем документ как изменённый
-        editor->document()->setModified(true);
+    if(tableWidget != nullptr){
+
+        QList<QTableWidgetItem *> selectedItems = tableWidget->selectedItems();
+
+        if(!selectedItems.isEmpty()){
+
+            bool ok;
+            QFont selectedFont = QFontDialog::getFont(&ok, this);
+
+            if(ok){
+                foreach (QTableWidgetItem *item, selectedItems)
+                {
+                    item->setFont(selectedFont);
+                }
+            }
+        }
+        else{
+            QMessageBox::information(this, "Выбор шрифта", "Выделите ячейки к которым хотите применить шрифт");
+        }
+    }
 }
 
 void MainWindow::on_newTable_triggered()
@@ -616,7 +747,6 @@ void MainWindow::onCurrentTabChanged(int index){
     }
 }
 
-
 void MainWindow::on_newRow_clicked()
 {
     QWidget *currentWidget = ui->tabWidget->currentWidget();
@@ -625,7 +755,6 @@ void MainWindow::on_newRow_clicked()
         tableWidget->insertRow(tableWidget->rowCount());
     }
 }
-
 
 void MainWindow::on_deleteRow_clicked()
 {
@@ -643,7 +772,6 @@ void MainWindow::on_deleteRow_clicked()
     }
 }
 
-
 void MainWindow::on_newColum_clicked()
 {
     QWidget *currentWidget = ui->tabWidget->currentWidget();
@@ -653,7 +781,6 @@ void MainWindow::on_newColum_clicked()
         tableWidget->insertColumn(tableWidget->columnCount());
     }
 }
-
 
 void MainWindow::on_deleteColumn_clicked()
 {
@@ -711,4 +838,3 @@ void MainWindow::on_Cut_triggered()
         QMessageBox::information(this, iformationHeader, "Текст для копирования не выбран");
     }
 }
-

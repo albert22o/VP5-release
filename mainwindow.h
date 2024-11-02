@@ -65,6 +65,8 @@ private slots:
 
     void on_Cut_triggered();
 
+    void onTableCellChanged(int row, int column);
+
 private:
     void Setup();
     void SetupTabWidget();
