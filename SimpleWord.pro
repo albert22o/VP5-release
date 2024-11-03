@@ -12,16 +12,10 @@ SOURCES += \
     dialogWindows/createtexttabledialog.cpp \
     main.cpp \
     mainwindow.cpp \
-    tables/savetableresults.cpp \
-    tables/tablemanager.cpp \
-    tables/tableparams.cpp
 
 HEADERS += \
     dialogWindows/createtexttabledialog.h \
     mainwindow.h \
-    tables/savetableresults.h \
-    tables/tablemanager.h \
-    tables/tableparams.h
 
 FORMS += \
     dialogWindows/createtexttabledialog.ui \

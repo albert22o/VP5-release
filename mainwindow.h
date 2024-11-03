@@ -45,19 +45,9 @@ private slots:
     void on_font_triggered();
 
     void on_newTable_triggered();
-    void on_NewTableCreted(QTableWidget* table);
-
-    void onCurrentTabChanged(int index);
+    void on_NewTableCreted(QString table, QTextEdit* textEdit);
 
     void SetTableActionsPannelVisible(bool flag);
-
-    void on_newRow_clicked();
-
-    void on_deleteRow_clicked();
-
-    void on_newColum_clicked();
-
-    void on_deleteColumn_clicked();
 
     void on_Copy_triggered();
 
@@ -66,6 +56,14 @@ private slots:
     void on_Cut_triggered();
 
     void onTableCellChanged(int row, int column);
+
+    void on_NewColumn_triggered();
+
+    void on_NewRow_triggered();
+
+    void on_DeleteColumn_triggered();
+
+    void on_DeleteRow_triggered();
 
 private:
     void Setup();

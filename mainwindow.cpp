@@ -7,6 +7,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QFileDialog>
+#include <QTextTable>
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -14,7 +15,6 @@
 #include <QSet>
 
 #include "dialogWindows/createtexttabledialog.h"
-#include "tables/tablemanager.h"
 
 QTemporaryFile MainWindow::tempFile;
 
@@ -34,7 +34,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::Setup(){
 
-    SetTableActionsPannelVisible(false);
     SetupTabWidget();
 }
 
@@ -42,7 +41,6 @@ void MainWindow::SetupTabWidget(){
     ui->tabWidget->setTabsClosable(true);
 
     connect(ui->tabWidget, &QTabWidget::tabCloseRequested, this, &MainWindow::CloseTab);
-    connect(ui->tabWidget, &QTabWidget::currentChanged, this, &MainWindow::onCurrentTabChanged);
 }
 
 void MainWindow::CloseTab(int tabIndex){
@@ -52,7 +50,6 @@ void MainWindow::CloseTab(int tabIndex){
     if(widget != nullptr){
 
         auto textEdit = qobject_cast<QTextEdit*>(widget);
-        auto tableWidget = qobject_cast<QTableWidget*>(widget);
 
         if(textEdit != nullptr){
             if(!textEdit->document()->isModified()){
@@ -61,10 +58,6 @@ void MainWindow::CloseTab(int tabIndex){
             else{
                 SaveOrJustCloseFile(widget, tabIndex);
             }
-        }
-
-        if(tableWidget != nullptr){
-            CloseTableWidgetTab(tableWidget, tabIndex);
         }
     }
 }
@@ -246,37 +239,7 @@ void MainWindow::on_saveTxtFile_triggered()
         return;
     }
 
-    auto tableWidget = qobject_cast<QTableWidget*>(currentWidget);
-
-    if(tableWidget){
-
-        TableManager tableManager;
-
-        if(tableWidget->property("modified").toBool()){
-
-            auto filePath = ui->tabWidget->tabToolTip(ui->tabWidget->currentIndex());
-
-            if(filePath.isEmpty()){
-
-                filePath = QFileDialog::getSaveFileName(this, tr("Сохранить файл таблицы"), "", tr("CSV Files (*.csv);;All Files (*)"));
-
-                if (filePath.isEmpty())
-                {
-                    return;
-                }
-            }
-
-            if(tableManager.SaveTable(tableWidget, filePath) != SaveTableResults::Ok){
-
-                QMessageBox::warning(nullptr, QObject::tr("Ошибка"), QObject::tr("Не удалось сохранить файл"));
-
-                return;
-            }
-        }
-    }
-    else{
-        SaveTxtFile();
-    }
+    SaveTxtFile();
 }
 
 void MainWindow::OpenExistingFile(){
@@ -311,41 +274,20 @@ void MainWindow::OpenExistingFile(){
             return;
         }
 
-        if(fileName.endsWith(".csv", Qt::CaseInsensitive)){
 
-            TableManager tableManager;
+        QTextStream in(&file);
+        QString fileContent = in.readAll();
+        file.close();
 
-            auto table = tableManager.OpenExistingTable(fileName);
+        auto textEdit = new QTextEdit();
+        textEdit->setText(fileContent);
 
-            if(table != nullptr){
-                currentTabIndex = ui->tabWidget->addTab(table, QFileInfo(fileName).fileName());
-                ui->tabWidget->setCurrentIndex(currentTabIndex);
+        int pageIndex = ui->tabWidget->addTab(textEdit, QFileInfo(fileName).fileName());
+        ui->tabWidget->setCurrentIndex(pageIndex);
+        currentTabIndex = ui->tabWidget->currentIndex();
 
-                connect(table, &QTableWidget::cellChanged, this, &MainWindow::onTableCellChanged);
-                table->setProperty("modified", false);
-            }
-            else{
-
-                QMessageBox::warning(nullptr, QObject::tr("Ошибка открытия файла"), QObject::tr("Не удалось открыть файл с таблицей"));
-                return;
-            }
-        }
-        else{
-
-            QTextStream in(&file);
-            QString fileContent = in.readAll();
-            file.close();
-
-            auto textEdit = new QTextEdit();
-            textEdit->setText(fileContent);
-
-            int pageIndex = ui->tabWidget->addTab(textEdit, QFileInfo(fileName).fileName());
-            ui->tabWidget->setCurrentIndex(pageIndex);
-            currentTabIndex = ui->tabWidget->currentIndex();
-
-            LoadTextSettings(fileName);
-            textEdit->document()->setModified(false);
-        }
+        LoadTextSettings(fileName);
+        textEdit->document()->setModified(false);
     }
 }
 
@@ -556,32 +498,47 @@ void MainWindow::on_search_triggered()
 
 void MainWindow::on_undo_triggered()
 {
-    editor = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
-    if (editor) {
-        // Проверяем, существует ли временный файл, и возвращаем сохраненное состояние
-        if (this->tempFile.exists() && this->tempFile.open()) {
-            QString saved = QString::fromUtf8(this->tempFile.readAll());
-            editor->document()->setPlainText(saved);
-            this->tempFile.close();
-            editor->document()->setModified(true);
-        } else {
-            editor->undo(); // Используем стандартную функцию QTextEdit для отмены
+    QWidget *widget = ui->tabWidget->widget(currentTabIndex);
+
+    auto textEdit = qobject_cast<QTextEdit *>(widget);
+
+    if (textEdit)
+    {
+        if (this->tempFile.exists())
+        {
+            if (this->tempFile.open())
+            {
+                textEdit->document()->undo();
+
+                QString saved = QString::fromUtf8(this->tempFile.readAll());
+
+                textEdit->document()->setPlainText(saved);
+
+                this->tempFile.reset();
+                this->tempFile.close();
+            }
+        }
+        else
+        {
+            textEdit->document()->undo();
         }
     }
 }
 
 void MainWindow::on_redo_triggered()
 {
-    editor = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
-    if (editor) {
-        editor->redo(); // Используем стандартную функцию QTextEdit для повтора
+    if (auto const currentWidget = ui->tabWidget->currentWidget())
+    {
+        if (auto textEdit = qobject_cast<QTextEdit *>(currentWidget))
+        {
+            textEdit->document()->redo();
+        }
     }
 }
 
 void MainWindow::on_color_triggered()
 {
     auto textEdit = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
-    auto tableWidget = qobject_cast<QTableWidget*>(ui->tabWidget->currentWidget());
 
     if(textEdit != nullptr){
 
@@ -618,48 +575,11 @@ void MainWindow::on_color_triggered()
             textEdit->mergeCurrentCharFormat(format);
         }
     }
-
-    if(tableWidget != nullptr){
-
-        auto selectedItems = tableWidget->selectedItems();
-
-        if(!selectedItems.isEmpty()){
-
-            auto newTextColor = QColorDialog::getColor(selectedItems[0]->foreground().color(), this, tr("Выберите цвет текста"));
-            auto newBackgroundColor = QColorDialog::getColor(selectedItems[0]->background().color(), this, tr("Выберите цвет фона"));
-
-            if (!newTextColor.isValid())
-            {
-                newTextColor = selectedItems[0]->foreground().color().isValid()
-                    ? selectedItems[0]->foreground().color() : QColor(Qt::black);
-            }
-
-            if (!newBackgroundColor.isValid() || newBackgroundColor.alpha() == 0)
-            {
-                newBackgroundColor = QColor(Qt::white);
-            }
-
-            if (newTextColor == newBackgroundColor)
-            {
-                newTextColor = (newBackgroundColor.lightness() > 128) ? QColor(Qt::black) : QColor(Qt::white);
-            }
-
-            foreach (QTableWidgetItem *item, selectedItems)
-            {
-                item->setForeground(newTextColor);
-                item->setBackground(newBackgroundColor);
-            }
-        }
-        else{
-            QMessageBox::information(this, "Выбор цвета шрифта", "Выделите ячейки к которым хотите применить изменение цвета шрифта");
-        }
-    }
 }
 
 void MainWindow::on_font_triggered()
 {
     auto textEdit = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
-    auto tableWidget = qobject_cast<QTableWidget*>(ui->tabWidget->currentWidget());
 
     if(textEdit != nullptr){
 
@@ -683,119 +603,29 @@ void MainWindow::on_font_triggered()
             textEdit->document()->setModified(true);
         }
     }
-
-    if(tableWidget != nullptr){
-
-        QList<QTableWidgetItem *> selectedItems = tableWidget->selectedItems();
-
-        if(!selectedItems.isEmpty()){
-
-            bool ok;
-            QFont selectedFont = QFontDialog::getFont(&ok, this);
-
-            if(ok){
-                foreach (QTableWidgetItem *item, selectedItems)
-                {
-                    item->setFont(selectedFont);
-                }
-            }
-        }
-        else{
-            QMessageBox::information(this, "Выбор шрифта", "Выделите ячейки к которым хотите применить шрифт");
-        }
-    }
 }
 
 void MainWindow::on_newTable_triggered()
 {
-    auto createTableDialog = new CreateTextTableDialog(this);
+    auto textEdit = qobject_cast<QTextEdit *>(ui->tabWidget->currentWidget());
+
+    if(textEdit == nullptr){
+        QMessageBox::information(this, "Вставка таблицы", "Выберите документ для вставки таблицы");
+        return;
+    }
+
+    auto createTableDialog = new CreateTextTableDialog(textEdit, this);
     connect(createTableDialog,&CreateTextTableDialog::NewTableCreated, this, &MainWindow::on_NewTableCreted);
     createTableDialog->show();
 }
 
-void MainWindow::on_NewTableCreted(QTableWidget* table){
+void MainWindow::on_NewTableCreted(QString table, QTextEdit* textEdit){
 
-    ui->tabWidget->addTab(table, GenerateNameForNewFile());
-    ui->tabWidget->setCurrentIndex(currentTabIndex);
-    ui->tabWidget->setCurrentWidget(table);
-}
-
-void MainWindow::SetTableActionsPannelVisible(bool flag)
-{
-    for (int i = 0; i < ui->tableActionsPannel->count(); ++i) {
-
-        QLayoutItem *item = ui->tableActionsPannel->itemAt(i);
-        if (item) {
-
-            QWidget *widget = item->widget();
-            if (widget) {
-                widget->setVisible(flag);
-            }
-        }
+    if(textEdit != nullptr){
+        textEdit->insertHtml(table);
     }
-}
-
-void MainWindow::onCurrentTabChanged(int index){
-
-    QWidget *widget = ui->tabWidget->widget(index);
-    QTableWidget* isTableWidget = qobject_cast<QTableWidget*>(widget);
-
-    if(isTableWidget){
-        SetTableActionsPannelVisible(true);
-    }else{
-          SetTableActionsPannelVisible(false);
-    }
-}
-
-void MainWindow::on_newRow_clicked()
-{
-    QWidget *currentWidget = ui->tabWidget->currentWidget();
-
-    if (QTableWidget *tableWidget = qobject_cast<QTableWidget*>(currentWidget)) {
-        tableWidget->insertRow(tableWidget->rowCount());
-    }
-}
-
-void MainWindow::on_deleteRow_clicked()
-{
-    QWidget *currentWidget = ui->tabWidget->currentWidget();
-
-    if (QTableWidget *tableWidget = qobject_cast<QTableWidget*>(currentWidget)) {
-
-        if(tableWidget->rowCount()>1)
-        {
-            int currentRow = tableWidget->currentRow();
-            if (currentRow != -1) {
-                tableWidget->removeRow(currentRow);
-            }
-        }
-    }
-}
-
-void MainWindow::on_newColum_clicked()
-{
-    QWidget *currentWidget = ui->tabWidget->currentWidget();
-
-    if (QTableWidget *tableWidget = qobject_cast<QTableWidget*>(currentWidget)) {
-
-        tableWidget->insertColumn(tableWidget->columnCount());
-    }
-}
-
-void MainWindow::on_deleteColumn_clicked()
-{
-    QWidget *currentWidget = ui->tabWidget->currentWidget();
-
-    if (QTableWidget *tableWidget = qobject_cast<QTableWidget*>(currentWidget)) {
-
-        if(tableWidget->columnCount()>1)
-        {
-            int currentColumn = tableWidget->currentColumn();
-
-            if (currentColumn != -1) {
-                tableWidget->removeColumn(currentColumn);
-            }
-        }
+    else{
+        QMessageBox::information(this, "Вставка таблицы", "Выберите документ для вставки таблицы");
     }
 }
 
@@ -838,3 +668,108 @@ void MainWindow::on_Cut_triggered()
         QMessageBox::information(this, iformationHeader, "Текст для копирования не выбран");
     }
 }
+
+void MainWindow::on_NewColumn_triggered()
+{
+    auto textEdit = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
+
+    if(textEdit != nullptr){
+
+        QTextCursor cursor = textEdit->textCursor();
+
+        if (cursor.currentTable())
+        {
+            QTextTable *table = cursor.currentTable();
+
+            table->appendColumns(1);
+        }
+        else
+        {
+            QMessageBox::warning(this, "Ошибка", "Текущая ячейка не является таблицей.");
+        }
+    }
+    else{
+        QMessageBox::information(this, "Менеджер таблиц", "Документ не выбран");
+    }
+}
+
+
+void MainWindow::on_NewRow_triggered()
+{
+    auto textEdit = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
+
+    if(textEdit != nullptr){
+
+        QTextCursor cursor = textEdit->textCursor();
+
+        if (cursor.currentTable())
+        {
+            QTextTable *table = cursor.currentTable();
+
+            table->appendRows(1);
+        }
+        else
+        {
+            QMessageBox::warning(this, "Ошибка", "Текущая ячейка не является таблицей.");
+        }
+    }
+    else{
+        QMessageBox::information(this, "Менеджер таблиц", "Документ не выбран");
+    }
+}
+
+
+void MainWindow::on_DeleteColumn_triggered()
+{
+    auto textEdit = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
+
+    if(textEdit != nullptr){
+
+        QTextCursor cursor = textEdit->textCursor();
+
+        if (QTextTable *table = cursor.currentTable())
+        {
+            if (table->columns() > 1)
+            {
+                int currentColumn = cursor.currentTable()->cellAt(cursor).column();
+                table->removeColumns(currentColumn, 1);
+            }
+        }
+
+        else
+        {
+            QMessageBox::warning(this, "Ошибка", "Текущая ячейка не является частью таблицы.");
+        }
+    }
+    else{
+        QMessageBox::information(this, "Менеджер таблиц", "Документ не выбран");
+    }
+}
+
+
+void MainWindow::on_DeleteRow_triggered()
+{
+    auto textEdit = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
+
+    if(textEdit != nullptr){
+
+        QTextCursor cursor = textEdit->textCursor();
+
+        if (QTextTable *table = cursor.currentTable())
+        {
+            if (table->rows() > 1)
+            {
+                int currentRow = cursor.currentTable()->cellAt(cursor).row();
+                table->removeRows(currentRow, 1);
+            }
+        }
+        else
+        {
+            QMessageBox::warning(this, "Ошибка", "Текущая ячейка не является частью таблицы.");
+        }
+    }
+    else{
+        QMessageBox::information(this, "Менеджер таблиц", "Документ не выбран");
+    }
+}
+
