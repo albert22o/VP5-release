@@ -7,9 +7,7 @@
         <file>icons/copy_icon.png</file>
         <file>icons/cut_icon.png</file>
         <file>icons/paste_icon.png</file>
-        <file>icons/add_column_icon.png</file>
-        <file>icons/add_row_icon.png</file>
-        <file>icons/delete_row_icon.png</file>
-        <file>icons/delte_column_icon.png</file>
+        <file>icons/feather_icon.png</file>
+        <file>icons/eraser_icon.png</file>
     </qresource>
 </RCC>
