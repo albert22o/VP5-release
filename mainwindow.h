@@ -27,6 +27,12 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+signals:
+    void onGoToMenuEmitted();
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private slots:
     void on_newFile_triggered();
     void on_saveTxtFile_triggered();

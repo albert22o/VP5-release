@@ -7,6 +7,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QFileDialog>
+#include <QCloseEvent>
 
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -24,6 +25,35 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     Setup();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event){
+
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle("Подтверждение");
+    msgBox.setText("Выберите действие:");
+
+    QPushButton *mainMenuButton = msgBox.addButton("Выйти в главное меню", QMessageBox::ActionRole);
+    QPushButton *exitButton = msgBox.addButton("Завершить приложение", QMessageBox::ActionRole);
+    QPushButton *cancelButton = msgBox.addButton("Отмена", QMessageBox::RejectRole);
+
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == mainMenuButton) {
+
+        emit this->onGoToMenuEmitted();
+        event->accept();
+
+    } else if (msgBox.clickedButton() == exitButton) {
+
+        event->accept();
+
+        QApplication::closeAllWindows();
+        QApplication::exit();
+
+    } else {
+        event->ignore();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -673,7 +703,7 @@ void MainWindow::on_deleteColumn_clicked()
 }
 
 void MainWindow::on_Copy_triggered()
-{
+{    
     auto textEditWidget = qobject_cast<QTextEdit*>(ui->tabWidget->currentWidget());
 
     if (textEditWidget != nullptr && textEditWidget->textCursor().hasSelection()) {

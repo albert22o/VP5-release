@@ -7,5 +7,7 @@
         <file>icons/copy_icon.png</file>
         <file>icons/cut_icon.png</file>
         <file>icons/paste_icon.png</file>
+        <file>icons/feather_icon.png</file>
+        <file>icons/eraser_icon.png</file>
     </qresource>
 </RCC>

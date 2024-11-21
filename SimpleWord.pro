@@ -10,15 +10,21 @@ CONFIG += c++17
 
 SOURCES += \
     dialogWindows/createtexttabledialog.cpp \
+    dialogWindows/menudialog.cpp \
+    graphicEditor/graphicedit.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     dialogWindows/createtexttabledialog.h \
+    dialogWindows/menudialog.h \
+    graphicEditor/graphicedit.h \
     mainwindow.h
 
 FORMS += \
     dialogWindows/createtexttabledialog.ui \
+    dialogWindows/menudialog.ui \
+    graphicEditor/graphicedit.ui \
     mainwindow.ui
 
 # Default rules for deployment.
