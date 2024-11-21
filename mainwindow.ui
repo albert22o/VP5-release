@@ -15,6 +15,38 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="tableActionsPannel">
+      <item>
+       <widget class="QPushButton" name="newRow">
+        <property name="text">
+         <string>Новая строка</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteRow">
+        <property name="text">
+         <string>Удалить строку</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="newColum">
+        <property name="text">
+         <string>Новый столбец</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="deleteColumn">
+        <property name="text">
+         <string>Удалить столбец</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget"/>
     </item>
@@ -26,7 +58,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -49,10 +81,6 @@
      <string>Таблицы</string>
     </property>
     <addaction name="newTable"/>
-    <addaction name="NewColumn"/>
-    <addaction name="NewRow"/>
-    <addaction name="DeleteColumn"/>
-    <addaction name="DeleteRow"/>
    </widget>
    <addaction name="menu"/>
    <addaction name="menu_2"/>
@@ -90,7 +118,7 @@
   </widget>
   <action name="newFile">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/icons/icons/create_icon.png</normaloff>:/icons/icons/create_icon.png</iconset>
    </property>
    <property name="text">
@@ -102,7 +130,7 @@
   </action>
   <action name="openExisting">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/icons/icons/open_icon.png</normaloff>:/icons/icons/open_icon.png</iconset>
    </property>
    <property name="text">
@@ -111,7 +139,7 @@
   </action>
   <action name="saveTxtFile">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/icons/icons/save_icon.png</normaloff>:/icons/icons/save_icon.png</iconset>
    </property>
    <property name="text">
@@ -162,7 +190,7 @@
   </action>
   <action name="newTable">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/icons/icons/create_table_icon.png</normaloff>:/icons/icons/create_table_icon.png</iconset>
    </property>
    <property name="text">
@@ -171,7 +199,7 @@
   </action>
   <action name="Copy">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/icons/icons/copy_icon.png</normaloff>:/icons/icons/copy_icon.png</iconset>
    </property>
    <property name="text">
@@ -186,7 +214,7 @@
   </action>
   <action name="Paste">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/icons/icons/paste_icon.png</normaloff>:/icons/icons/paste_icon.png</iconset>
    </property>
    <property name="text">
@@ -201,7 +229,7 @@
   </action>
   <action name="Cut">
    <property name="icon">
-    <iconset resource="resources.qrc">
+    <iconset>
      <normaloff>:/icons/icons/cut_icon.png</normaloff>:/icons/icons/cut_icon.png</iconset>
    </property>
    <property name="text">
@@ -214,45 +242,7 @@
     <enum>QAction::MenuRole::TextHeuristicRole</enum>
    </property>
   </action>
-  <action name="NewColumn">
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/icons/add_column_icon.png</normaloff>:/icons/icons/add_column_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Новый столбец</string>
-   </property>
-  </action>
-  <action name="NewRow">
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/icons/add_row_icon.png</normaloff>:/icons/icons/add_row_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Новая строка</string>
-   </property>
-  </action>
-  <action name="DeleteColumn">
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/icons/delte_column_icon.png</normaloff>:/icons/icons/delte_column_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Удалить столбец</string>
-   </property>
-  </action>
-  <action name="DeleteRow">
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/icons/icons/delete_row_icon.png</normaloff>:/icons/icons/delete_row_icon.png</iconset>
-   </property>
-   <property name="text">
-    <string>Удалить строку</string>
-   </property>
-  </action>
  </widget>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

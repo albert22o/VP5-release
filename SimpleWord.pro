@@ -12,6 +12,7 @@ SOURCES += \
     dialogWindows/createtexttabledialog.cpp \
     dialogWindows/menudialog.cpp \
     graphicEditor/graphicedit.cpp \
+    graphicEditor/graphicsview.cpp \
     main.cpp \
     mainwindow.cpp \
 
@@ -19,6 +20,7 @@ HEADERS += \
     dialogWindows/createtexttabledialog.h \
     dialogWindows/menudialog.h \
     graphicEditor/graphicedit.h \
+    graphicEditor/graphicsview.h \
     mainwindow.h
 
 FORMS += \

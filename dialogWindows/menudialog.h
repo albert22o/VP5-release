@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "mainwindow.h"
+#include "graphicEditor/graphicedit.h"
 
 namespace Ui {
 class MenuDialog;
@@ -33,6 +34,7 @@ private:
     Ui::MenuDialog *ui;
 
     MainWindow* textEditor;
+    GraphicEdit* graphicEditor;
 };
 
 #endif // MENUDIALOG_H

@@ -9,5 +9,18 @@
         <file>icons/paste_icon.png</file>
         <file>icons/feather_icon.png</file>
         <file>icons/eraser_icon.png</file>
+        <file>icons/penIcons/BevelJoin.png</file>
+        <file>icons/penIcons/CustomDashLine.png</file>
+        <file>icons/penIcons/Dash.png</file>
+        <file>icons/penIcons/DashDotDotLine.png</file>
+        <file>icons/penIcons/DashDotLine.png</file>
+        <file>icons/penIcons/DotLine.png</file>
+        <file>icons/penIcons/FlatCap.png</file>
+        <file>icons/penIcons/MilterJoin.png</file>
+        <file>icons/penIcons/RoundCap.png</file>
+        <file>icons/penIcons/RoundJoin.png</file>
+        <file>icons/penIcons/Solid.png</file>
+        <file>icons/penIcons/SquareCap.png</file>
+        <file>icons/wall.jpg</file>
     </qresource>
 </RCC>
