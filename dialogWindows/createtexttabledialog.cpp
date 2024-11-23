@@ -1,9 +1,8 @@
 #include "createtexttabledialog.h"
 #include "ui_createtexttabledialog.h"
 
-CreateTextTableDialog::CreateTextTableDialog(QTextEdit* textEdit, QWidget *parent)
-    : QDialog(parent),
-    textEdit(textEdit)
+CreateTextTableDialog::CreateTextTableDialog(QWidget *parent)
+    : QDialog(parent)
     , ui(new Ui::CreateTextTableDialog)
 {
     ui->setupUi(this);
@@ -41,36 +40,22 @@ void CreateTextTableDialog::ConnectSlotsWithSignals(){
 
 void CreateTextTableDialog::OnCreateNewTableButtonClicked(){
 
-    auto table = CreateHtmlTable();
-    emit this->NewTableCreated(table, textEdit);
+    auto table = CreateTableWidget();
+    emit this->NewTableCreated(table);
 
     this->deleteLater();
     this->close();
 }
 
-QString CreateTextTableDialog::CreateHtmlTable()
-{
+QTableWidget* CreateTextTableDialog::CreateTableWidget(){
     auto rows = ui->rowsSpinBox->value();
     auto columns = ui->columnsSpinBox->value();
     auto indent = ui->indentSpinBox->value();
 
-    QString htmlTable = QString("<table border='1' cellspacing='%1' cellpadding='4'>").arg(indent);
+    auto table = new QTableWidget(rows, columns);
+    table->setStyleSheet(QString("QTableWidget::item { padding: %1px; }").arg(indent));
 
-    for (int row = 0; row < rows; ++row)
-    {
-        htmlTable += "<tr>";
-
-        for (int col = 0; col < columns; ++col)
-        {
-            htmlTable += "<td></td>";
-        }
-
-        htmlTable += "</tr>";
-    }
-
-    htmlTable += "</table>";
-
-    return htmlTable;
+    return table;
 }
 
 CreateTextTableDialog::~CreateTextTableDialog()

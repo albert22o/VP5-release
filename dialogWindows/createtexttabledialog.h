@@ -2,7 +2,7 @@
 #define CREATETEXTTABLEDIALOG_H
 
 #include <QDialog>
-#include <QTextEdit>
+#include <QTableWidget>
 
 namespace Ui {
 class CreateTextTableDialog;
@@ -13,20 +13,18 @@ class CreateTextTableDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CreateTextTableDialog(QTextEdit* textEdit, QWidget *parent = nullptr);
+    explicit CreateTextTableDialog(QWidget *parent = nullptr);
     ~CreateTextTableDialog();
 
 private:
-    QTextEdit* textEdit;
-
     void ConnectSlotsWithSignals();
     void SetupWidgets();
     void SetupSpinboxes();
 
-    QString CreateHtmlTable();
+    QTableWidget* CreateTableWidget();
     Ui::CreateTextTableDialog *ui;
 signals:
-    void NewTableCreated(QString newHtmlTable, QTextEdit* textEdit);
+    void NewTableCreated(QTableWidget* newTable);
 private slots:
     void OnCreateNewTableButtonClicked();
 };

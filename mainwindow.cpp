@@ -607,26 +607,16 @@ void MainWindow::on_font_triggered()
 
 void MainWindow::on_newTable_triggered()
 {
-    auto textEdit = qobject_cast<QTextEdit *>(ui->tabWidget->currentWidget());
-
-    if(textEdit == nullptr){
-        QMessageBox::information(this, "Вставка таблицы", "Выберите документ для вставки таблицы");
-        return;
-    }
-
-    auto createTableDialog = new CreateTextTableDialog(textEdit, this);
+    auto createTableDialog = new CreateTextTableDialog(this);
     connect(createTableDialog,&CreateTextTableDialog::NewTableCreated, this, &MainWindow::on_NewTableCreted);
     createTableDialog->show();
 }
 
-void MainWindow::on_NewTableCreted(QString table, QTextEdit* textEdit){
+void MainWindow::on_NewTableCreted(QTableWidget* table){
 
-    if(textEdit != nullptr){
-        textEdit->insertHtml(table);
-    }
-    else{
-        QMessageBox::information(this, "Вставка таблицы", "Выберите документ для вставки таблицы");
-    }
+    ui->tabWidget->addTab(table, GenerateNameForNewFile());
+    ui->tabWidget->setCurrentIndex(currentTabIndex);
+    ui->tabWidget->setCurrentWidget(table);
 }
 
 void MainWindow::SetTableActionsPannelVisible(bool flag)
