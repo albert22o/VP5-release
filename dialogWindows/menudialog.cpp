@@ -20,6 +20,12 @@ void MenuDialog::on_goGraphicEdit_clicked()
 
 void MenuDialog::RunInGraphicEditorMode(){
 
+    graphicEditor = new GraphicEdit(this);
+    graphicEditor->show();
+
+    QObject::connect(graphicEditor, &GraphicEdit::onGoToMenuEmitted, this, &MenuDialog::on_back_to_menu);
+
+    hide();
 }
 
 void MenuDialog::on_goTextEdit_clicked()

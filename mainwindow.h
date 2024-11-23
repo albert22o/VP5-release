@@ -51,7 +51,7 @@ private slots:
     void on_font_triggered();
 
     void on_newTable_triggered();
-    void on_NewTableCreted(QTableWidget* table);
+    void on_NewTableCreted(QString table, QTextEdit* textEdit);
 
     void onCurrentTabChanged(int index);
 
