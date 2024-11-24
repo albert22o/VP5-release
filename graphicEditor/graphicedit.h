@@ -43,6 +43,8 @@ private slots:
 
     void on_AddImage_triggered();
 
+    void on_DeleteFigure_triggered();
+
 private:
     Ui::GraphicEdit *ui;
     void stopMovingObjects();

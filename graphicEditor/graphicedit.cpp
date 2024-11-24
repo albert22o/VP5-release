@@ -456,3 +456,34 @@ void GraphicEdit::on_AddImage_triggered()
     // Возобновить анимации или таймеры
     resumeMovingObjects();
 }
+void GraphicEdit::on_DeleteFigure_triggered()
+{
+    // Получаем список всех выбранных объектов на сцене
+    QList<QGraphicsItem *> selectedItems = scene->selectedItems();
+
+
+
+    foreach (QGraphicsItem *item, selectedItems) {
+
+        if (QGraphicsItemGroup *group = qgraphicsitem_cast<QGraphicsItemGroup *>(item)) {
+
+            movingItemGroups.removeAll(group);
+
+            QList<QGraphicsItem *> children = group->childItems();
+            for (QGraphicsItem *child : children) {
+                scene->removeItem(child);  // Убираем элемент из сцены
+                delete child;              // Удаляем элемент
+            }
+
+            scene->removeItem(group);  // Убираем саму группу из сцены
+            delete group;              // Удаляем саму группу
+        } else {
+
+            scene->removeItem(item);  // Убираем объект из сцены
+            delete item;              // Удаляем объект
+        }
+    }
+
+    // Обновляем сцену и выводим сообщение
+    scene->update();
+}
