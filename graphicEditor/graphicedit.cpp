@@ -122,7 +122,7 @@ void GraphicEdit::setupWalls() {
     int wallThickness = 10;
 
     // Загружаем изображение стены
-    QPixmap wallImage(":/wall.jpg");
+    QPixmap wallImage(":/R.jfif");
     if (wallImage.isNull()) {
         return;
     }

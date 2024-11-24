@@ -26,5 +26,6 @@
     <qresource prefix="/">
         <file>wall.jpg</file>
         <file>collision (mp3cut.net).wav</file>
+        <file>R.jfif</file>
     </qresource>
 </RCC>
