@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -37,6 +37,9 @@
    </attribute>
    <addaction name="Feather"/>
    <addaction name="Eraser"/>
+   <addaction name="Figure"/>
+   <addaction name="SaveScene"/>
+   <addaction name="AddImage"/>
   </widget>
   <action name="Feather">
    <property name="icon">
@@ -50,7 +53,7 @@
     <string>Перо</string>
    </property>
    <property name="menuRole">
-    <enum>QAction::MenuRole::NoRole</enum>
+    <enum>QAction::NoRole</enum>
    </property>
   </action>
   <action name="Eraser">
@@ -65,7 +68,22 @@
     <string>Ластик</string>
    </property>
    <property name="menuRole">
-    <enum>QAction::MenuRole::NoRole</enum>
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="Figure">
+   <property name="text">
+    <string>Добавить фигуру</string>
+   </property>
+  </action>
+  <action name="SaveScene">
+   <property name="text">
+    <string>Сохранить сцену</string>
+   </property>
+  </action>
+  <action name="AddImage">
+   <property name="text">
+    <string>Добавить изображение</string>
    </property>
   </action>
  </widget>

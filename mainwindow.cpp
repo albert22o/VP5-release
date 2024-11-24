@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
     Setup();
 }
 
+
+
 void MainWindow::closeEvent(QCloseEvent *event){
 
     QMessageBox msgBox(this);

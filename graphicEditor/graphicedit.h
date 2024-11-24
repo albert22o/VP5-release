@@ -37,9 +37,15 @@ private slots:
 
     void on_Feather_triggered();
 
+    void on_Figure_triggered();
+
+    void on_SaveScene_triggered();
+
+    void on_AddImage_triggered();
+
 private:
     Ui::GraphicEdit *ui;
-
+    void stopMovingObjects();
     GraphicsView *view;
     QGraphicsScene *scene;
     QPen currentPen;
@@ -50,10 +56,13 @@ private:
     QGraphicsPixmapItem *rightWall;
 
     QList<QGraphicsItemGroup*> movingItemGroups;
-
+    void addShape(const QString &shapeType, const QRectF &rect, const QColor &fillColor, Qt::BrushStyle brushStyle, const QColor &strokeColor, int strokeWidth);
+    Qt::BrushStyle stringToBrushStyle(const QString &styleStr);
     void InitializeGraphicsView();
     void setupWalls();
     void updateWallPositions();
+    void resumeMovingObjects();
+    QList<bool> movingStates;
 };
 
 #endif // GRAPHICEDIT_H
