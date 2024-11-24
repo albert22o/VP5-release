@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QGraphicsPixmapItem>
+#include <QSound>
 
 #include "graphicEditor/graphicsview.h"
 
@@ -57,14 +58,21 @@ private:
     QGraphicsPixmapItem *leftWall;
     QGraphicsPixmapItem *rightWall;
 
+
     QList<QGraphicsItemGroup*> movingItemGroups;
     void addShape(const QString &shapeType, const QRectF &rect, const QColor &fillColor, Qt::BrushStyle brushStyle, const QColor &strokeColor, int strokeWidth);
     Qt::BrushStyle stringToBrushStyle(const QString &styleStr);
+    QList<QPointF> velocities;
     void InitializeGraphicsView();
     void setupWalls();
+    void moveObject();
     void updateWallPositions();
     void resumeMovingObjects();
+    void groupSetFlags(QGraphicsItemGroup *group);
+    void drawOganesyan();
+    void createMovingObject_Flower();
     QList<bool> movingStates;
+    QSound collisionSound;
 };
 
 #endif // GRAPHICEDIT_H

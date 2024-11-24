@@ -40,6 +40,7 @@
    <addaction name="Figure"/>
    <addaction name="SaveScene"/>
    <addaction name="AddImage"/>
+   <addaction name="DeleteFigure"/>
   </widget>
   <action name="Feather">
    <property name="icon">
@@ -84,6 +85,11 @@
   <action name="AddImage">
    <property name="text">
     <string>Добавить изображение</string>
+   </property>
+  </action>
+  <action name="DeleteFigure">
+   <property name="text">
+    <string>Удалить фигуру</string>
    </property>
   </action>
  </widget>

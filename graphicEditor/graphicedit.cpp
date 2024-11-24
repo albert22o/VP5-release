@@ -11,10 +11,12 @@
 #include <QFormLayout>
 #include <QColorDialog>
 #include <QFileDialog>
+#include <QTimer>
+
 
 GraphicEdit::GraphicEdit(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::GraphicEdit)
+    , ui(new Ui::GraphicEdit), topWall(nullptr), bottomWall(nullptr), leftWall(nullptr), rightWall(nullptr), collisionSound(":/collision (mp3cut.net).wav")
 {
     ui->setupUi(this);
 
@@ -37,14 +39,140 @@ void GraphicEdit::InitializeGraphicsView(){
     connect(view, &GraphicsView::resized, this, &GraphicEdit::setupWalls);
 
     setupWalls();
+    drawOganesyan();
+    createMovingObject_Flower();
+    QTimer *moveTimer;
+    moveTimer = new QTimer(this);
+    connect(moveTimer, &QTimer::timeout, this, &GraphicEdit::moveObject);
+    moveTimer->start(30); // Интервал обновления, например, 30 мс
 }
 
-void GraphicEdit::setupWalls(){
+void GraphicEdit::moveObject()
+{
+    int wallThickness = 10;
 
+    for (int i = 0; i < movingItemGroups.size(); ++i) {
+        if (movingStates[i]) {
+            QGraphicsItemGroup *itemGroup = movingItemGroups[i];
+            QPointF velocity = velocities[i];
+            QPointF newPos = itemGroup->pos() + velocity;
+
+            QRectF boundingRect = itemGroup->boundingRect();
+            qreal left = newPos.x();
+            qreal right = newPos.x() + boundingRect.width();
+            qreal top = newPos.y();
+            qreal bottom = newPos.y() + boundingRect.height();
+
+            if (left <= wallThickness || right >= view->viewport()->width() - 2 * wallThickness) {
+                velocity.setX(-velocity.x());
+                collisionSound.play();
+            }
+
+            if (top <= wallThickness || bottom >= view->viewport()->height() - 2 * wallThickness) {
+                velocity.setY(-velocity.y());
+                collisionSound.play();
+            }
+
+            bool collisionDetected = false;
+            QList<QGraphicsItem *> itemsAtNewPos = scene->items(QRectF(newPos, boundingRect.size()));
+
+            for (QGraphicsItem *otherItem : itemsAtNewPos) {
+                if (otherItem != itemGroup && otherItem->data(0) != "user" && otherItem->data(0) != "image") {
+                    QRectF otherBoundingRect = otherItem->boundingRect().translated(otherItem->pos());
+                    qreal otherLeft = otherBoundingRect.x();
+                    qreal otherRight = otherBoundingRect.x() + otherBoundingRect.width();
+                    qreal otherTop = otherBoundingRect.y();
+                    qreal otherBottom = otherBoundingRect.y() + otherBoundingRect.height();
+
+                    if (right > otherLeft && left < otherRight && bottom > otherTop && top < otherBottom) {
+                        collisionDetected = true;
+
+                        if (velocity.x() > 0) {
+                            velocity.setX(-velocity.x());
+                        } else if (velocity.x() < 0) {
+                            velocity.setX(-velocity.x());
+                        }
+
+                        if (velocity.y() > 0) {
+                            velocity.setY(-velocity.y());
+                        } else if (velocity.y() < 0) {
+                            velocity.setY(-velocity.y());
+                        }
+
+                        collisionSound.play();
+                        break;
+                    }
+                }
+            }
+
+            if (!collisionDetected) {
+                itemGroup->setPos(newPos);
+            }
+
+            velocities[i] = velocity;
+        }
+    }
 }
+
+
+void GraphicEdit::setupWalls() {
+    // Получаем размеры области просмотра
+    int viewWidth = view->viewport()->width();
+    int viewHeight = view->viewport()->height();
+    int wallThickness = 10;
+
+    // Загружаем изображение стены
+    QPixmap wallImage(":/wall.jpg");
+    if (wallImage.isNull()) {
+        return;
+    }
+
+    // Масштабируем изображение для горизонтальных и вертикальных стен
+    QPixmap scaledTopBottom = wallImage.scaled(viewWidth, wallThickness);
+    QPixmap scaledLeftRight = wallImage.scaled(wallThickness, viewHeight);
+
+    // Функция для создания стены, если она не существует
+    auto createOrUpdateWall = [this](QGraphicsPixmapItem*& wall, const QPixmap& pixmap) {
+        if (!wall) {
+            wall = scene->addPixmap(pixmap);
+            wall->setFlag(QGraphicsItem::ItemIsMovable, false); // Делаем стену неподвижной
+        } else {
+            wall->setPixmap(pixmap); // Обновляем изображение стены
+        }
+    };
+
+    // Создаём или обновляем стены
+    createOrUpdateWall(topWall, scaledTopBottom);
+    createOrUpdateWall(bottomWall, scaledTopBottom);
+    createOrUpdateWall(leftWall, scaledLeftRight);
+    createOrUpdateWall(rightWall, scaledLeftRight);
+
+    // Обновляем позиции стен
+    updateWallPositions();
+}
+
 
 void GraphicEdit::updateWallPositions(){
+    int wallThickness = 10;
 
+    int horizontalOffset = view->horizontalScrollBar()->value();
+    int verticalOffset = view->verticalScrollBar()->value();
+
+    if (topWall)
+        topWall->setPos(horizontalOffset, verticalOffset);
+    if (bottomWall)
+        bottomWall->setPos(horizontalOffset, view->viewport()->height() - wallThickness + verticalOffset);
+    if (leftWall)
+        leftWall->setPos(horizontalOffset, verticalOffset);
+    if (rightWall)
+        rightWall->setPos(view->viewport()->width() - wallThickness + horizontalOffset, verticalOffset);
+}
+
+
+void GraphicEdit::groupSetFlags(QGraphicsItemGroup *group){
+    group->setFlag(QGraphicsItem::ItemIsMovable, true);
+    group->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    group->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 }
 
 void GraphicEdit::closeEvent(QCloseEvent *event){
@@ -456,6 +584,52 @@ void GraphicEdit::on_AddImage_triggered()
     // Возобновить анимации или таймеры
     resumeMovingObjects();
 }
+
+void GraphicEdit::createMovingObject_Flower()
+{
+    // Создание лепестков
+    QGraphicsEllipseItem *petal1 = new QGraphicsEllipseItem(20,20,20,30);  // Верхний лепесток
+    petal1->setBrush(Qt::red);
+    QGraphicsEllipseItem *petal2 = new QGraphicsEllipseItem(20,10,20,30); // Правый лепесток
+    petal2->setBrush(Qt::red);
+    QGraphicsEllipseItem *petal3 = new QGraphicsEllipseItem(10,20,30,20); // Нижний лепесток
+    petal3->setBrush(Qt::red);
+    QGraphicsEllipseItem *petal4 = new QGraphicsEllipseItem(20,20,30,20);
+    petal4->setBrush(Qt::red);
+
+    // Создание центра цветка
+    QGraphicsEllipseItem *center = new QGraphicsEllipseItem(20, 20, 20, 20);
+    center->setBrush(Qt::black);
+
+    // Создание стебля
+    QGraphicsRectItem *stem = new QGraphicsRectItem(25, 30, 10, 50);
+    stem->setBrush(Qt::darkGreen);
+
+
+    // Группируем фигуры в один объект (цветок)
+    QGraphicsItemGroup *flower = new QGraphicsItemGroup();
+    flower->addToGroup(stem);
+    flower->addToGroup(petal1);
+    flower->addToGroup(petal2);
+    flower->addToGroup(petal3);
+    flower->addToGroup(petal4);
+    flower->addToGroup(center);
+
+
+
+    // Добавляем объект на сцену
+    flower->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene->addItem(flower);
+
+    flower->setPos(200, 400); // Начальная позиция объекта
+
+    // Добавляем объект и его начальную скорость в соответствующие списки
+    movingItemGroups.append(flower);
+    velocities.append(QPointF(-2, 2)); // Скорость по осям X и Y
+    movingStates.append(true);
+}
+
+
 void GraphicEdit::on_DeleteFigure_triggered()
 {
     // Получаем список всех выбранных объектов на сцене

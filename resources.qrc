@@ -23,4 +23,8 @@
         <file>icons/penIcons/SquareCap.png</file>
         <file>icons/wall.jpg</file>
     </qresource>
+    <qresource prefix="/">
+        <file>wall.jpg</file>
+        <file>collision (mp3cut.net).wav</file>
+    </qresource>
 </RCC>
