@@ -175,6 +175,120 @@ void GraphicEdit::groupSetFlags(QGraphicsItemGroup *group){
     group->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 }
 
+void GraphicEdit::drawOganesyan() {
+    // О
+    QGraphicsItemGroup *group_O = new QGraphicsItemGroup();
+    QGraphicsEllipseItem *O_1 = scene->addEllipse(QRectF(10, 15, 50, 50), QPen(Qt::blue, 6), QBrush(Qt::yellow, Qt::SolidPattern));
+    group_O->addToGroup(O_1);
+    groupSetFlags(group_O);
+    scene->addItem(group_O);
+
+    // Г
+    QGraphicsItemGroup *group_G = new QGraphicsItemGroup();
+    QGraphicsItem *G_1 = scene->addLine(QLineF(70, 15, 120, 15), QPen(Qt::red, 6));
+    group_G->addToGroup(G_1);
+    QGraphicsItem *G_2 = scene->addLine(QLineF(70, 15, 70, 60), QPen(Qt::red, 6));
+    group_G->addToGroup(G_2);
+    groupSetFlags(group_G);
+    scene->addItem(group_G);
+
+    // А
+    QGraphicsItemGroup *group_A = new QGraphicsItemGroup();
+    QGraphicsItem *A_1 = scene->addLine(QLineF(130, 60, 150, 15), QPen(Qt::green, 6));
+    group_A->addToGroup(A_1);
+    QGraphicsItem *A_2 = scene->addLine(QLineF(150, 15, 170, 60), QPen(Qt::green, 6));
+    group_A->addToGroup(A_2);
+    QGraphicsItem *A_3 = scene->addLine(QLineF(140, 40, 160, 40), QPen(Qt::green, 6));
+    group_A->addToGroup(A_3);
+    groupSetFlags(group_A);
+    scene->addItem(group_A);
+
+    // Н
+    QGraphicsItemGroup *group_N = new QGraphicsItemGroup();
+    QGraphicsItem *N_1 = scene->addLine(QLineF(180, 15, 180, 60), QPen(Qt::blue, 6));
+    group_N->addToGroup(N_1);
+    QGraphicsItem *N_2 = scene->addLine(QLineF(180, 15, 200, 60), QPen(Qt::blue, 6));
+    group_N->addToGroup(N_2);
+    QGraphicsItem *N_3 = scene->addLine(QLineF(200, 15, 200, 60), QPen(Qt::blue, 6));
+    group_N->addToGroup(N_3);
+    groupSetFlags(group_N);
+    scene->addItem(group_N);
+
+    // Е
+    QGraphicsItemGroup *group_E = new QGraphicsItemGroup();
+    QGraphicsItem *E_1 = scene->addLine(QLineF(210, 15, 210, 60), QPen(Qt::red, 6));
+    group_E->addToGroup(E_1);
+    QGraphicsItem *E_2 = scene->addLine(QLineF(210, 15, 240, 15), QPen(Qt::red, 6));
+    group_E->addToGroup(E_2);
+    QGraphicsItem *E_3 = scene->addLine(QLineF(210, 40, 230, 40), QPen(Qt::red, 6));
+    group_E->addToGroup(E_3);
+    QGraphicsItem *E_4 = scene->addLine(QLineF(210, 60, 240, 60), QPen(Qt::red, 6));
+    group_E->addToGroup(E_4);
+    groupSetFlags(group_E);
+    scene->addItem(group_E);
+
+    // С
+    QGraphicsItemGroup *group_C = new QGraphicsItemGroup();
+    QGraphicsLineItem *C_1 = scene->addLine(QLineF(250, 15, 280, 15), QPen(Qt::yellow, 6));
+    group_C->addToGroup(C_1);
+    QGraphicsLineItem *C_2 = scene->addLine(QLineF(250, 15, 250, 60), QPen(Qt::yellow, 6));
+    group_C->addToGroup(C_2);
+    QGraphicsLineItem *C_3 = scene->addLine(QLineF(250, 60, 280, 60), QPen(Qt::yellow, 6));
+    group_C->addToGroup(C_3);
+    groupSetFlags(group_C);
+    scene->addItem(group_C);
+
+    // Я
+    QGraphicsItemGroup *group_YA = new QGraphicsItemGroup();
+
+    // Вертикальная линия (левая часть)
+    QGraphicsItem *YA_1 = scene->addLine(QLineF(330, 40, 300, 40), QPen(Qt::green, 6));
+    group_YA->addToGroup(YA_1);
+
+    // Верхняя горизонтальная линия
+    QGraphicsItem *YA_2 = scene->addLine(QLineF(330, 15, 300, 15), QPen(Qt::green, 6));
+    group_YA->addToGroup(YA_2);
+
+    // Правая вертикальная линия (перпендикулярная, идет вниз)
+    QGraphicsItem *YA_3 = scene->addLine(QLineF(330, 15, 330, 60), QPen(Qt::green, 6));
+    group_YA->addToGroup(YA_3);
+
+    // Нижняя горизонтальная линия
+    QGraphicsItem *YA_4 = scene->addLine(QLineF(330, 15, 330, 40), QPen(Qt::green, 6));
+    group_YA->addToGroup(YA_4);
+
+    // Наклонная линия
+    QGraphicsItem *YA_5 = scene->addLine(QLineF(300, 60, 330, 40), QPen(Qt::green, 6));
+    group_YA->addToGroup(YA_5);
+
+    // Наклонная линия
+    QGraphicsItem *YA_6 = scene->addLine(QLineF(300, 15, 300, 40), QPen(Qt::green, 6));
+    group_YA->addToGroup(YA_6);
+
+
+    // Устанавливаем флаги для взаимодействия
+    groupSetFlags(group_YA);
+
+    // Добавляем группу на сцену
+    scene->addItem(group_YA);
+
+
+
+    // Н
+    QGraphicsItemGroup *group_N2 = new QGraphicsItemGroup();
+    QGraphicsItem *N2_1 = scene->addLine(QLineF(340, 15, 340, 60), QPen(Qt::blue, 6));
+    group_N2->addToGroup(N2_1);
+    QGraphicsItem *N2_2 = scene->addLine(QLineF(340, 15, 360, 60), QPen(Qt::blue, 6));
+    group_N2->addToGroup(N2_2);
+    QGraphicsItem *N2_3 = scene->addLine(QLineF(360, 15, 360, 60), QPen(Qt::blue, 6));
+    group_N2->addToGroup(N2_3);
+    groupSetFlags(group_N2);
+    scene->addItem(group_N2);
+
+    scene->update();  // Обновить всю сцену
+}
+
+
 void GraphicEdit::closeEvent(QCloseEvent *event){
 
     QMessageBox msgBox(this);
