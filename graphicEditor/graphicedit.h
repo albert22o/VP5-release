@@ -72,11 +72,13 @@ private:
 
     void drawOganesyan();
     void drawRakov(int startX, int startY);
+    void drawTashlykov(int startX, int startY);
 
     void textSetFlags(QGraphicsTextItem *item);
 
     void createMovingObject_Flower();
     void createMovingObject_Car(int startX, int startY);
+    void createMovingObject_Phone(int startX, int startY);
 
     QList<bool> movingStates;
     //QSound collisionSound;

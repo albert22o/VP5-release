@@ -41,8 +41,11 @@ void GraphicEdit::InitializeGraphicsView(){
     setupWalls();
     drawOganesyan();
     drawRakov(30,100);
+    drawTashlykov(30,250);
     createMovingObject_Flower();
     createMovingObject_Car(200,200);
+    createMovingObject_Phone(300,300);
+
     QTimer *moveTimer;
     moveTimer = new QTimer(this);
     connect(moveTimer, &QTimer::timeout, this, &GraphicEdit::moveObject);
@@ -283,6 +286,104 @@ void GraphicEdit::textSetFlags(QGraphicsTextItem *item){
     item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 }
 
+void GraphicEdit::drawTashlykov(int startX, int startY){
+
+    QPen pen(Qt::black, 2);
+    QBrush brush(Qt::cyan);
+    QFont font("Arial", 24);
+    int xOffset = startX;
+    int yOffset = startY;
+    int letterSpacing = 10;
+
+    // T
+    QGraphicsItemGroup* groupT = new QGraphicsItemGroup();
+    groupT->addToGroup(createLine(scene, QLineF(xOffset + 5, yOffset, xOffset + 5, yOffset + 40), QPen(Qt::darkGreen, 4)));
+    groupT->addToGroup(createLine(scene, QLineF(xOffset - 10, yOffset, xOffset + 20, yOffset), QPen(Qt::darkGreen, 4)));
+    setItemFlags(groupT);
+    scene->addItem(groupT);
+    xOffset += 20 + letterSpacing;
+
+    // А
+    QGraphicsItemGroup* groupA = new QGraphicsItemGroup();
+    groupA->addToGroup(createLine(scene, QLineF(xOffset, yOffset + 40, xOffset + 20, yOffset + 10), QPen(Qt::red, 6)));
+    groupA->addToGroup(createLine(scene, QLineF(xOffset + 20, yOffset + 10, xOffset + 40, yOffset + 40), QPen(Qt::red, 6)));
+    groupA->addToGroup(createLine(scene, QLineF(xOffset + 10, yOffset + 30, xOffset + 30, yOffset + 30), QPen(Qt::red, 6)));
+    setItemFlags(groupA);
+    scene->addItem(groupA);
+    xOffset += 50 + letterSpacing;
+
+
+    // Ш
+    QGraphicsItemGroup* groupSh = new QGraphicsItemGroup();
+
+    groupSh->addToGroup(createLine(scene, QLineF(xOffset, yOffset + 40, xOffset + 20, yOffset + 40), QPen(Qt::blue, 6)));
+    groupSh->addToGroup(createLine(scene, QLineF(xOffset, yOffset + 40, xOffset, yOffset), QPen(Qt::blue, 6)));
+    groupSh->addToGroup(createLine(scene, QLineF(xOffset + 10, yOffset + 40, xOffset + 10, yOffset), QPen(Qt::blue, 6)));
+    groupSh->addToGroup(createLine(scene, QLineF(xOffset + 20, yOffset + 40, xOffset + 20, yOffset), QPen(Qt::blue, 6)));
+
+    setItemFlags(groupSh);
+    scene->addItem(groupSh);
+    xOffset += 30 + letterSpacing;
+
+    // л
+    QGraphicsItemGroup* groupL = new QGraphicsItemGroup();
+    groupL->addToGroup(createLine(scene, QLineF(xOffset, yOffset + 40, xOffset + 20, yOffset + 10), QPen(Qt::darkGreen, 6)));
+    groupL->addToGroup(createLine(scene, QLineF(xOffset + 20, yOffset + 10, xOffset + 40, yOffset + 40), QPen(Qt::darkGreen, 6)));
+    setItemFlags(groupL);
+    scene->addItem(groupL);
+    xOffset += 50 + letterSpacing;
+
+
+    // Y
+    QGraphicsItemGroup* groupY = new QGraphicsItemGroup();
+    groupY->addToGroup(createLine(scene, QLineF(xOffset, yOffset + 40, xOffset, yOffset + 20), QPen(Qt::darkMagenta, 6)));
+    groupY->addToGroup(createLine(scene, QLineF(xOffset, yOffset + 20, xOffset + 20, yOffset), QPen(Qt::darkMagenta, 6)));
+    groupY->addToGroup(createLine(scene, QLineF(xOffset, yOffset + 20, xOffset - 20, yOffset), QPen(Qt::darkMagenta, 6)));
+    setItemFlags(groupY);
+    scene->addItem(groupY);
+    xOffset += 20 + letterSpacing;
+
+
+    QGraphicsItemGroup *group_K = new QGraphicsItemGroup();
+
+    QGraphicsItem *K_1 = scene->addRect(QRectF(xOffset,yOffset,10,50), QPen(Qt::green, 2), QBrush(Qt::black, Qt::SolidPattern));
+    group_K->addToGroup(K_1);
+    QGraphicsItem *K_2 = scene->addRect(QRectF(15,15,30,10), QPen(Qt::green, 2), QBrush(Qt::black, Qt::SolidPattern));
+    K_2->setTransformOriginPoint(15, 15);
+    K_2->setRotation(-45);
+    K_2->setPos(xOffset - 10, yOffset + 5);
+    group_K->addToGroup(K_2);
+    QGraphicsItem *K_3 = scene->addRect(QRectF(15,15,30,10), QPen(Qt::green, 2), QBrush(Qt::black, Qt::SolidPattern));
+    K_3->setTransformOriginPoint(15, 15);
+    K_3->setRotation(45);
+    K_3->setPos(xOffset - 5, yOffset + 5);
+    group_K->addToGroup(K_3);
+    groupSetFlags(group_K);
+    scene->addItem(group_K);
+
+    xOffset += 30 + letterSpacing;
+
+    // О
+    QGraphicsItemGroup* groupO = new QGraphicsItemGroup();
+    groupO->addToGroup(createEllipse(scene, xOffset, yOffset + 10, 30, 30, QPen(Qt::magenta, 6), QBrush(Qt::white)));
+    setItemFlags(groupO);
+    scene->addItem(groupO);
+    xOffset += 45 + letterSpacing;
+
+
+    // V
+    QGraphicsItemGroup *group_V = new QGraphicsItemGroup();
+    QGraphicsItem *V_1 = scene->addLine(QLineF(xOffset, yOffset + 45, xOffset - 20, yOffset), QPen(Qt::blue, 6));
+    group_V->addToGroup(V_1);
+    QGraphicsItem *V_2 = scene->addLine(QLineF(xOffset, yOffset + 45, xOffset + 20, yOffset), QPen(Qt::blue, 6));
+    group_V->addToGroup(V_2);
+    groupSetFlags(group_V);
+    scene->addItem(group_V);
+
+    xOffset += 30 + letterSpacing;
+
+    createText(scene, "ПАВЕЛ", xOffset, yOffset + 15, font, Qt::green);
+}
 
 void GraphicEdit::drawOganesyan() {
     // О
@@ -809,36 +910,78 @@ void GraphicEdit::on_AddImage_triggered()
 }
 
 void GraphicEdit::createMovingObject_Car(int startX, int startY){
-    // Колеса
+
     QGraphicsEllipseItem* wheel1 = new QGraphicsEllipseItem(0, 20, 15, 15);
     wheel1->setBrush(Qt::black);
+
     QGraphicsEllipseItem* wheel2 = new QGraphicsEllipseItem(50, 20, 15, 15);
     wheel2->setBrush(Qt::black);
 
-    // Кузов
     QGraphicsRectItem* body = new QGraphicsRectItem(10, 10, 40, 20);
     body->setBrush(Qt::red);
 
-    // Окно (опционально)
     QGraphicsRectItem* window = new QGraphicsRectItem(15, 12, 30, 10);
     window->setBrush(Qt::blue);
 
-    // Группируем фигуры в один объект (машинка)
     QGraphicsItemGroup* car = new QGraphicsItemGroup();
     car->addToGroup(wheel1);
     car->addToGroup(wheel2);
     car->addToGroup(body);
     car->addToGroup(window);
 
-    // Добавляем объект на сцену
     car->setFlag(QGraphicsItem::ItemIsSelectable, true);
     scene->addItem(car);
 
-    car->setPos(startX, startY); // Начальная позиция объекта, задается параметрами
+    car->setPos(startX, startY);
+
+    movingItemGroups.append(car);
+    velocities.append(QPointF(-2, 2));
+    movingStates.append(true);
+}
+
+void GraphicEdit::createMovingObject_Phone(int startX, int startY){
+
+    // Создание корпуса телефона
+    QGraphicsRectItem* body = new QGraphicsRectItem(10, 10, 50, 100);
+    body->setBrush(Qt::darkGray);
+    body->setPen(QPen(Qt::black));
+
+    // Создание экрана
+    QGraphicsRectItem* screen = new QGraphicsRectItem(15, 15, 40, 60);
+    screen->setBrush(Qt::lightGray);
+    screen->setPen(QPen(Qt::black));
+
+    // Создание кнопки "домой"
+    QGraphicsEllipseItem* homeButton = new QGraphicsEllipseItem(30, 80, 10, 10);
+    homeButton->setBrush(Qt::black);
+
+    // Создание кнопок громкости
+    QGraphicsRectItem* volumeUp = new QGraphicsRectItem(5, 25, 3, 10);
+    volumeUp->setBrush(Qt::black);
+
+    QGraphicsRectItem* volumeDown = new QGraphicsRectItem(5, 40, 3, 10);
+    volumeDown->setBrush(Qt::black);
+
+    // Группируем фигуры в один объект
+    QGraphicsItemGroup* phone = new QGraphicsItemGroup();
+    phone->addToGroup(body);
+    phone->addToGroup(screen);
+    phone->addToGroup(homeButton);
+    phone->addToGroup(volumeUp);
+    phone->addToGroup(volumeDown);
+
+    // Устанавливаем флаг для выбора объекта
+    phone->setFlag(QGraphicsItem::ItemIsSelectable, true);
+
+    // Добавляем объект на сцену
+    scene->addItem(phone);
+
+    // Устанавливаем начальную позицию телефона, используя параметры функции
+    phone->setPos(startX, startY);
 
     // Добавляем объект и его начальную скорость в соответствующие списки
-    movingItemGroups.append(car);
-    velocities.append(QPointF(-2, 2)); // Скорость по осям X и Y
+    movingItemGroups.append(phone);
+    velocities.append(QPointF(2, -2)); // Скорость по осям X и Y
     movingStates.append(true);
 }
 
@@ -871,8 +1014,6 @@ void GraphicEdit::createMovingObject_Flower()
     flower->addToGroup(petal3);
     flower->addToGroup(petal4);
     flower->addToGroup(center);
-
-
 
     // Добавляем объект на сцену
     flower->setFlag(QGraphicsItem::ItemIsSelectable, true);
