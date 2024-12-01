@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QGraphicsPixmapItem>
-#include <QSound>
+//#include <QSound>
 
 #include "graphicEditor/graphicsview.h"
 
@@ -69,10 +69,17 @@ private:
     void updateWallPositions();
     void resumeMovingObjects();
     void groupSetFlags(QGraphicsItemGroup *group);
+
     void drawOganesyan();
+    void drawRakov(int startX, int startY);
+
+    void textSetFlags(QGraphicsTextItem *item);
+
     void createMovingObject_Flower();
+    void createMovingObject_Car(int startX, int startY);
+
     QList<bool> movingStates;
-    QSound collisionSound;
+    //QSound collisionSound;
 };
 
 #endif // GRAPHICEDIT_H

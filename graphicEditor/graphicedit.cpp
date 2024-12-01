@@ -16,7 +16,7 @@
 
 GraphicEdit::GraphicEdit(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::GraphicEdit), topWall(nullptr), bottomWall(nullptr), leftWall(nullptr), rightWall(nullptr), collisionSound(":/collision (mp3cut.net).wav")
+    , ui(new Ui::GraphicEdit), topWall(nullptr), bottomWall(nullptr), leftWall(nullptr), rightWall(nullptr)
 {
     ui->setupUi(this);
 
@@ -40,7 +40,9 @@ void GraphicEdit::InitializeGraphicsView(){
 
     setupWalls();
     drawOganesyan();
+    drawRakov(30,100);
     createMovingObject_Flower();
+    createMovingObject_Car(200,200);
     QTimer *moveTimer;
     moveTimer = new QTimer(this);
     connect(moveTimer, &QTimer::timeout, this, &GraphicEdit::moveObject);
@@ -65,12 +67,12 @@ void GraphicEdit::moveObject()
 
             if (left <= wallThickness || right >= view->viewport()->width() - 2 * wallThickness) {
                 velocity.setX(-velocity.x());
-                collisionSound.play();
+                //collisionSound.play();
             }
 
             if (top <= wallThickness || bottom >= view->viewport()->height() - 2 * wallThickness) {
                 velocity.setY(-velocity.y());
-                collisionSound.play();
+                //collisionSound.play();
             }
 
             bool collisionDetected = false;
@@ -99,7 +101,7 @@ void GraphicEdit::moveObject()
                             velocity.setY(-velocity.y());
                         }
 
-                        collisionSound.play();
+                        //collisionSound.play();
                         break;
                     }
                 }
@@ -174,6 +176,113 @@ void GraphicEdit::groupSetFlags(QGraphicsItemGroup *group){
     group->setFlag(QGraphicsItem::ItemIsSelectable, true);
     group->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 }
+
+void setItemFlags(QGraphicsItem* item) {
+    item->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+}
+
+QGraphicsRectItem* createRect(QGraphicsScene* scene, int x, int y, int width, int height, QPen pen, QBrush brush) {
+    QGraphicsRectItem* rect = scene->addRect(x, y, width, height, pen, brush);
+    setItemFlags(rect);
+    return rect;
+}
+
+QGraphicsEllipseItem* createEllipse(QGraphicsScene* scene, int x, int y, int width, int height, QPen pen, QBrush brush) {
+    QGraphicsEllipseItem* ellipse = scene->addEllipse(x, y, width, height, pen, brush);
+    setItemFlags(ellipse);
+    return ellipse;
+}
+
+QGraphicsLineItem* createLine(QGraphicsScene* scene, QLineF line, QPen pen) {
+    QGraphicsLineItem* item = scene->addLine(line, pen);
+    setItemFlags(item);
+    return item;
+}
+
+QGraphicsTextItem* createText(QGraphicsScene* scene, const QString& text, int x, int y, QFont font, QColor color) {
+    QGraphicsTextItem* item = new QGraphicsTextItem(text);
+    item->setFont(font);
+    item->setDefaultTextColor(color);
+    item->setPos(x, y);
+    setItemFlags(item);
+    scene->addItem(item);
+    return item;
+}
+
+
+
+void GraphicEdit::drawRakov(int startX, int startY) {
+
+    QPen pen(Qt::black, 2); // Толщина линии 2 пикселя, черный цвет
+    QBrush brush(Qt::cyan); // Кисть синего цвета
+    QFont font("Arial", 24); // Шрифт Arial, размер 24
+    int xOffset = startX;
+    int yOffset = startY;
+    int letterSpacing = 10; // Расстояние между буквами
+
+    // R
+    QGraphicsItemGroup* groupR = new QGraphicsItemGroup();
+    groupR->addToGroup(createEllipse(scene, xOffset, yOffset, 40, 40, pen, brush));
+    groupR->addToGroup(createRect(scene, xOffset -10, yOffset, 10, 70, pen, QBrush(Qt::black)));
+    setItemFlags(groupR);
+    scene->addItem(groupR);
+    xOffset += 50 + letterSpacing;
+
+    // А
+    QGraphicsItemGroup* groupA = new QGraphicsItemGroup();
+    groupA->addToGroup(createLine(scene, QLineF(xOffset, yOffset + 40, xOffset + 20, yOffset + 10), QPen(Qt::red, 6)));
+    groupA->addToGroup(createLine(scene, QLineF(xOffset + 20, yOffset + 10, xOffset + 40, yOffset + 40), QPen(Qt::red, 6)));
+    groupA->addToGroup(createLine(scene, QLineF(xOffset + 10, yOffset + 30, xOffset + 30, yOffset + 30), QPen(Qt::red, 6)));
+    setItemFlags(groupA);
+    scene->addItem(groupA);
+    xOffset += 50 + letterSpacing;
+
+    QGraphicsItemGroup *group_K = new QGraphicsItemGroup();
+
+    QGraphicsItem *K_1 = scene->addRect(QRectF(xOffset,yOffset,10,50), QPen(Qt::green, 2), QBrush(Qt::black, Qt::SolidPattern));
+    group_K->addToGroup(K_1);
+    QGraphicsItem *K_2 = scene->addRect(QRectF(15,15,30,10), QPen(Qt::green, 2), QBrush(Qt::black, Qt::SolidPattern));
+    K_2->setTransformOriginPoint(15, 15);
+    K_2->setRotation(-45);
+    K_2->setPos(xOffset - 10, yOffset + 5);
+    group_K->addToGroup(K_2);
+    QGraphicsItem *K_3 = scene->addRect(QRectF(15,15,30,10), QPen(Qt::green, 2), QBrush(Qt::black, Qt::SolidPattern));
+    K_3->setTransformOriginPoint(15, 15);
+    K_3->setRotation(45);
+    K_3->setPos(xOffset - 5, yOffset + 5);
+    group_K->addToGroup(K_3);
+    groupSetFlags(group_K);
+    scene->addItem(group_K);
+
+    xOffset += 50 + letterSpacing;
+
+    // О
+    QGraphicsItemGroup* groupO = new QGraphicsItemGroup();
+    groupO->addToGroup(createEllipse(scene, xOffset, yOffset + 10, 40, 40, QPen(Qt::magenta, 6), QBrush(Qt::white)));
+    setItemFlags(groupO);
+    scene->addItem(groupO);
+    xOffset += 60 + letterSpacing;
+
+    // V
+    QGraphicsItemGroup *group_V = new QGraphicsItemGroup();
+    QGraphicsItem *V_1 = scene->addLine(QLineF(xOffset, yOffset + 45, xOffset - 20, yOffset), QPen(Qt::blue, 6));
+    group_V->addToGroup(V_1);
+    QGraphicsItem *V_2 = scene->addLine(QLineF(xOffset, yOffset + 45, xOffset + 20, yOffset), QPen(Qt::blue, 6));
+    group_V->addToGroup(V_2);
+    groupSetFlags(group_V);
+    scene->addItem(group_V);
+
+    xOffset += 30 + letterSpacing;
+
+    createText(scene, "АРТЕМ", xOffset, yOffset + 15, font, Qt::green);
+}
+
+void GraphicEdit::textSetFlags(QGraphicsTextItem *item){
+    item->setFlag(QGraphicsItem::ItemIsMovable, true);
+    item->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
+}
+
 
 void GraphicEdit::drawOganesyan() {
     // О
@@ -697,6 +806,40 @@ void GraphicEdit::on_AddImage_triggered()
 
     // Возобновить анимации или таймеры
     resumeMovingObjects();
+}
+
+void GraphicEdit::createMovingObject_Car(int startX, int startY){
+    // Колеса
+    QGraphicsEllipseItem* wheel1 = new QGraphicsEllipseItem(0, 20, 15, 15);
+    wheel1->setBrush(Qt::black);
+    QGraphicsEllipseItem* wheel2 = new QGraphicsEllipseItem(50, 20, 15, 15);
+    wheel2->setBrush(Qt::black);
+
+    // Кузов
+    QGraphicsRectItem* body = new QGraphicsRectItem(10, 10, 40, 20);
+    body->setBrush(Qt::red);
+
+    // Окно (опционально)
+    QGraphicsRectItem* window = new QGraphicsRectItem(15, 12, 30, 10);
+    window->setBrush(Qt::blue);
+
+    // Группируем фигуры в один объект (машинка)
+    QGraphicsItemGroup* car = new QGraphicsItemGroup();
+    car->addToGroup(wheel1);
+    car->addToGroup(wheel2);
+    car->addToGroup(body);
+    car->addToGroup(window);
+
+    // Добавляем объект на сцену
+    car->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    scene->addItem(car);
+
+    car->setPos(startX, startY); // Начальная позиция объекта, задается параметрами
+
+    // Добавляем объект и его начальную скорость в соответствующие списки
+    movingItemGroups.append(car);
+    velocities.append(QPointF(-2, 2)); // Скорость по осям X и Y
+    movingStates.append(true);
 }
 
 void GraphicEdit::createMovingObject_Flower()
